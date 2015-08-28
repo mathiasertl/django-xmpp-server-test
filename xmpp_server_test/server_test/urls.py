@@ -21,6 +21,6 @@ from . import views
 
 urlpatterns = [
     url(r'^$', views.RootView.as_view(), name='overview'),
-    url(r'^(?P<domain>[\w-]+)/$', views.ServerView.as_view(), name='overview'),
-    url(r'^(?P<domain>[\w-]+)/(?P<pk>\d+)/$', views.ServerTestView.as_view(), name='overview'),
+    url(r'^(?P<domain>[^/]*)/$', views.ServerView.as_view(), name='server'),
+    url(r'^(?P<domain>[\w-]+)/(?P<pk>\d+)/$', views.ServerTestView.as_view(), name='servertest'),
 ]
