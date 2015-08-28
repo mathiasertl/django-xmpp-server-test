@@ -27,6 +27,8 @@ class RootView(ListView):
 
 class ServerView(DetailView):
     queryset = Server.objects.all()
+    slug_field = 'domain'
+    slug_url_kwarg = 'domain'
 
 
 class ServerTestView(DetailView):
