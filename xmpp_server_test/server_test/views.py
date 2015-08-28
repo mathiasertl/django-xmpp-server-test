@@ -14,20 +14,20 @@
 # You should have received a copy of the GNU General Public License along with
 # django-xmpp-server-test.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.views.generic import ListView
 from django.views.generic import DetailView
+from django.views.generic.list import ListView
 
 from .models import Server
 from .models import ServerTest
 
 
 class RootView(ListView):
-    queryset = Server
+    queryset = Server.objects.all()
 
 
 class ServerView(DetailView):
-    pass
+    queryset = Server.objects.all()
 
 
 class ServerTestView(DetailView):
-    pass
+    queryset = ServerTest.objects.all()
