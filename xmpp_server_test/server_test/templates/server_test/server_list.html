@@ -3,6 +3,8 @@
 
 {% block title %}{% trans "Test a Jabber/XMPP server" %}{% endblock title %}
 
+{% block pagetitle %}Jabber server checker{% endblock pagetitle %}
+
 {% block body %}
 <ul>{% for server in object_list %}
     <li><a href="{% url 'server-test:server' domain=server.domain %}">{{ server.domain }}</a></li>

@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Test a Jabber/XMPP server" %}{% endblock title %}
+{% block title %}{% blocktrans with domain=server.domain %}Results: {{ domain }}{% endblocktrans %}{%endblock %}
+{% block pagetitle %}{% blocktrans with domain=server.domain %}Test results for {{ domain }}{% endblocktrans %}{%endblock %}
 
 {% block body %}
-<h1>{{ server.domain }}</h1>
-
+{% include "server_test/test.html" %}
 {% endblock body %}
