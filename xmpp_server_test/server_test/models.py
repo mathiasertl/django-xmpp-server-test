@@ -22,7 +22,16 @@ from jsonfield import JSONField
 class Server(models.Model):
     domain = models.CharField(max_length=255)
 
+    def __str__(self):
+        return self.domain
+
 
 class ServerTest(models.Model):
     server = models.ForeignKey(Server, related_name='tests')
-    data = JSONField(default={})
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    finished = models.BooleanField(default=False)
+    data = JSONField(default={}, blank=True)
+
+    def __str__(self):
+        return '%s: %s' % (self.server.domain, self.created.strftime('%Y-%m-%d %H:%M'))
