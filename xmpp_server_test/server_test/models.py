@@ -24,6 +24,11 @@ from jsonfield import JSONField
 class Server(models.Model):
     domain = models.CharField(max_length=255)
 
+    def test(self):
+        t = self.tests.create()
+        t.start_test()
+        t.save()
+
     def __str__(self):
         return self.domain
 
@@ -88,11 +93,9 @@ class ServerTest(models.Model):
 
         if self.data['dns']['srv'] is False or self.data['dns']['client'] is False or \
                 self.data['dns']['server'] is False:
-            self.save()
             return  # no SRV records
 
         self.finished = True
-        self.save()
 
     def __str__(self):
         return '%s: %s' % (self.server.domain, self.created.strftime('%Y-%m-%d %H:%M'))
