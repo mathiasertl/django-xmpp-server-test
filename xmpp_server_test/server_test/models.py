@@ -16,10 +16,13 @@
 
 from django.db import models
 
+from jsonfield import JSONField
+
 
 class Server(models.Model):
     domain = models.CharField(max_length=255)
 
 
 class ServerTest(models.Model):
-    server = models.ForeignKey(model=Server, related_name='tests')
+    server = models.ForeignKey(Server, related_name='tests')
+    data = JSONField(default={})
