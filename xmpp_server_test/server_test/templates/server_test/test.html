@@ -1,10 +1,19 @@
-<h2 id="dns" class="page-header">DNS records</h2>
+{% load i18n %}<h2 id="dns" class="page-header">DNS records</h2>
 <div class="row">
     <div class="col-md-5">
+        {% trans "Overview:" %}
         <table class="table table-bordered">
             <tr>
                 <td>SRV records</td>
-                <td>{% if test.dns.srv %}OK{% else %}Failed{% endif %}</td>
+                <td><p class="label label-success">{% if data.dns.srv %}OK{% else %}Failed{% endif %}</p></td>
+            </tr>
+            <tr>
+                <td>IPv4</td>
+                <td><p class="label label-success">{% if data.dns.ipv4 %}OK{% else %}Failed{% endif %}</p></td>
+            </tr>
+            <tr>
+                <td>IPv6</td>
+                <td><p class="label label-success">{% if data.dns.ipv6 %}OK{% else %}Failed{% endif %}</p></td>
             </tr>
         </table>
     </div>
