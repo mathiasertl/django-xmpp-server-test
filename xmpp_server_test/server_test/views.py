@@ -27,9 +27,17 @@ class RootView(ListView):
 
 class ServerView(DetailView):
     queryset = Server.objects.all()
+    context_object_name = 'server'
     slug_field = 'domain'
     slug_url_kwarg = 'domain'
+
+    def get_context_data(self, **kwargs):
+        context = super(ServerView, self).get_context_data(**kwargs)
+        context['test'] = self.object.latest_test
+        context['data'] = context['test'].data
+        return context
 
 
 class ServerTestView(DetailView):
     queryset = ServerTest.objects.all()
+    context_object_name = 'test'
