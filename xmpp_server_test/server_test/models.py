@@ -24,6 +24,16 @@ from jsonfield import JSONField
 class Server(models.Model):
     domain = models.CharField(max_length=255)
 
+    @property
+    def latest_test(self):
+        try:
+            return self.tests.filter(finished=True).latest(field_name='created')
+        except ServerTest.DoesNotExist:
+            try:
+                return self.tests.all().latest(field_name='created')
+            except ServerTest.DoesNotExist:
+                pass
+
     def test(self):
         t = self.tests.create()
         t.start_test()
