@@ -15,3 +15,11 @@
 # django-xmpp-http-upload.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.db import models
+
+
+class Server(models.Model):
+    domain = models.CharField(max_length=255)
+
+
+class ServerTest(models.Model):
+    server = models.ForeignKey(model=Server, related_name='tests')
