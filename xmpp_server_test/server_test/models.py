@@ -12,7 +12,7 @@
 # PURPOSE.  See the GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License along with
-# django-xmpp-http-upload.  If not, see <http://www.gnu.org/licenses/>.
+# django-xmpp-server-test.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.db import models
 
