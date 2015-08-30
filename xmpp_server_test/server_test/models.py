@@ -38,6 +38,7 @@ class Server(models.Model):
         t = self.tests.create()
         t.start_test()
         t.save()
+        return t
 
     def __str__(self):
         return self.domain
