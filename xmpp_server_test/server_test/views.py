@@ -71,10 +71,11 @@ class ServerView(DetailView):
 
 class ServerTestView(DetailView):
     template_name = 'server_test/server_detail.html'
-    queryset = ServerTest.objects.all()
+    queryset = ServerTest.objects.select_related('server')
     context_object_name = 'test'
 
     def get_context_data(self, **kwargs):
         context = super(ServerTestView, self).get_context_data(**kwargs)
         context['data'] = context['test'].data
+        context['server'] = context['test'].server
         return context
