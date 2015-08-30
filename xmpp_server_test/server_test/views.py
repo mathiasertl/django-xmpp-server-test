@@ -14,15 +14,46 @@
 # You should have received a copy of the GNU General Public License along with
 # django-xmpp-server-test.  If not, see <http://www.gnu.org/licenses/>.
 
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
 from django.views.generic import DetailView
+from django.views.generic.edit import FormMixin
 from django.views.generic.list import ListView
 
+from .forms import DomainForm
 from .models import Server
 from .models import ServerTest
 
 
-class RootView(ListView):
+class RootView(ListView, FormMixin):
     queryset = Server.objects.all()
+    form_class = DomainForm
+
+    def get_context_data(self, **kwargs):
+        context = super(RootView, self).get_context_data(**kwargs)
+        context['form'] = self.get_form()
+        return context
+
+    def form_valid(self, form):
+        domain = form.cleaned_data['domain']
+        server, created = Server.objects.get_or_create(domain=domain)
+
+        # TODO: If created, check for a very recent test
+        test = server.test()
+        url = reverse('server-test:servertest', kwargs={'domain': domain, 'pk': test.pk})
+
+        return HttpResponseRedirect(url)
+
+    def post(self, request, *args, **kwargs):
+        """
+        Handles POST requests, instantiating a form instance with the passed
+        POST variables and then checked for validity.
+        """
+        form = self.get_form()
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
 
 
 class ServerView(DetailView):
