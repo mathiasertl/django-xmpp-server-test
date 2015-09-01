@@ -16,6 +16,7 @@
 
 from dns import resolver
 
+from django.core.urlresolvers import reverse
 from django.db import models
 
 from jsonfield import JSONField
@@ -51,6 +52,9 @@ class ServerTest(models.Model):
     modified = models.DateTimeField(auto_now=True)
     finished = models.BooleanField(default=False)
     data = JSONField(default={}, blank=True)
+
+    def get_absolute_url(self):
+        return reverse('server-test:servertest', kwargs={'domain': self.server.domain, 'pk': self.pk, })
 
     def srv_lookup(self, kind, domain):
         key = '%s_records' % kind
