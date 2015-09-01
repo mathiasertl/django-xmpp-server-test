@@ -40,6 +40,7 @@ class Server(models.Model):
         return reverse('server-test:server', kwargs={'domain': self.domain, })
 
     def test(self):
+        # TODO: check for a very recent test
         t = self.tests.create()
         t.start_test()
         t.save()

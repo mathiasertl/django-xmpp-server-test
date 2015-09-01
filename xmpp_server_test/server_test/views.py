@@ -14,7 +14,6 @@
 # You should have received a copy of the GNU General Public License along with
 # django-xmpp-server-test.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.views.generic import DetailView
 from django.views.generic.edit import FormMixin
@@ -37,13 +36,9 @@ class RootView(ListView, FormMixin):
 
     def form_valid(self, form):
         domain = form.cleaned_data['domain']
-        server, created = Server.objects.get_or_create(domain=domain)
-
-        # TODO: If created, check for a very recent test
+        server, _created = Server.objects.get_or_create(domain=domain)
         test = server.test()
-        url = reverse('server-test:servertest', kwargs={'domain': domain, 'pk': test.pk})
-
-        return HttpResponseRedirect(url)
+        return HttpResponseRedirect(test.get_absolute_url())
 
     def post(self, request, *args, **kwargs):
         """
@@ -66,6 +61,13 @@ class ServerView(DetailView):
     context_object_name = 'server'
     slug_field = 'domain'
     slug_url_kwarg = 'domain'
+
+    def get(self, request, *args, **kwargs):
+        if request.GET.get('recheck') == '1':
+            server = self.get_object()
+            test = server.test()
+            return HttpResponseRedirect(test.get_absolute_url())
+        return super(ServerView, self).get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(ServerView, self).get_context_data(**kwargs)
