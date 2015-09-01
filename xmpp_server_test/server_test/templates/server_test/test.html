@@ -9,7 +9,7 @@
             </tr>
             <tr>
                 <td>IPv4</td>
-                <td>{% if data.dns.client_ipv4 and data.dns.server_ipv4 %}
+                <td>{% if data.dns.ipv4 %}
                 <p class="label label-success">{% trans "OK" %}</p>
                 {% else %}
                 <p class="label label-error">{% trans "Failed" %}</p>
@@ -17,7 +17,7 @@
             </tr>
             <tr>
                 <td>IPv6</td>
-                <td>{% if data.dns.client_ipv6 and data.dns.server_ipv6 %}
+                <td>{% if data.dns.ipv6 %}
                 <p class="label label-success">{% trans "OK" %}</p>
                 {% else %}
                 <p class="label label-error">{% trans "Failed" %}</p>

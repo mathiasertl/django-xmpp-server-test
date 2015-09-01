@@ -123,6 +123,8 @@ class ServerTest(models.Model):
             'client_ipv6': True,
             'client_ipv6': True,
             'client_records': [],
+            'ipv4': True,
+            'ipv6': True,
             'server': True,
             'server_records': [],
             'srv': True,
@@ -131,6 +133,11 @@ class ServerTest(models.Model):
         # Do client SRV lookups
         self.srv_lookup('client', domain)
         self.srv_lookup('server', domain)
+
+        self.data['dns']['ipv4'] = self.data['dns']['client_ipv4'] \
+            and self.data['dns']['client_ipv6']
+        self.data['dns']['ipv6'] = self.data['dns']['client_ipv6'] \
+            and self.data['dns']['client_ipv6']
 
         if self.data['dns']['srv'] is False or self.data['dns']['client'] is False or \
                 self.data['dns']['server'] is False:
