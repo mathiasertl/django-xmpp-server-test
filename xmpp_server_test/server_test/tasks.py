@@ -16,7 +16,13 @@
 
 from celery import shared_task
 
+from .models import ServerTest
+
 
 @shared_task
-def test():
-    print('print')
+def test_server(test):
+    test = ServerTest.objects.select_related('server').get(pk=test)
+    test.finished = True
+    test.server.listed = True
+    test.server.save()
+    test.save()
