@@ -6,6 +6,7 @@
 {% block pagetitle %}{% trans "Test results" %}{% endblock pagetitle %}
 
 {% block body %}
+{% trans "A full list of all servers checked:" %}
 <ul>{% for server in object_list %}
     <li><a href="{% url 'server-test:server' domain=server.domain %}">{{ server.domain }}</a></li>
 {% endfor %}</ul>
