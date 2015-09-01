@@ -61,48 +61,70 @@ class ServerTest(models.Model):
         return reverse('server-test:servertest', kwargs={'domain': self.server.domain, 'pk': self.pk, })
 
     def srv_lookup(self, kind, domain):
+        print('Checking xmpp-%s records for %s' % (kind, domain))
         key = '%s_records' % kind
         try:
-            for record in resolver.query('_xmpp-%s._tcp.%s' % (kind, domain), 'SRV'):
-                host = record.target.split(1)[0].to_text()
-
-                # do A/AAAA lookup
-                ips = []
-                try:
-                    for a in resolver.query(host, 'A'):
-                        ips.append(a.address)
-                except resolver.NXDOMAIN:
-                    self.data['dns']['ipv4'] = False
-                try:
-                    for aaaa in resolver.query(host, 'AAAA'):
-                        ips.append(aaaa.address)
-                except resolver.NXDOMAIN:
-                    self.data['dns']['ipv6'] = False
-
-                self.data['dns'][key].append({
-                    'port': record.port,
-                    'host': host,
-                    'ips': ips,
-                })
-
-            # check if there is at least one record pointing to at least one IP
-            validity = [bool(e['ips']) for e in self.data['dns'][key]]
-            if True not in validity:
-                self.data['dns'][kind] = False
+            srv_records = resolver.query('_xmpp-%s._tcp.%s' % (kind, domain), 'SRV')
         except resolver.NoAnswer:
             self.data['dns']['srv'] = False
             self.data['dns'][kind] = False
+            return
+
+        has_ipv4 = False
+        has_ipv6 = False
+
+        for record in srv_records:
+            host = record.target.split(1)[0].to_text()
+
+            # do A/AAAA lookup
+            try:
+                ip4 = [r.address for r in resolver.query(host, 'A')]
+                has_ipv4 = True
+            except resolver.NXDOMAIN:
+                # The domain name is not at all defined.
+                self.data['dns']['srv'] = False
+            except resolver.NoAnswer:
+                # The domain name is defined, but there just is no A record. This is not an error
+                # because there might be other records that provide an A record.
+                ip4 = []
+
+            try:
+                ip6 = [r.address for r in resolver.query(host, 'AAAA')]
+                has_ipv6 = True
+            except resolver.NoAnswer:
+                # The domain name is defined, but there just is no AAAA record. This is not an error
+                # because there might be other records that provide an AAAA record.
+                ip6 = []
+
+            if not ip4 and not ip6:
+                # This SRV target has neither an IPv4 nor an IPv6 record. We consider this faulty.
+                # The most common mistake would be to point an SRV record to a domain with e.g.
+                # only a MX or CNAME record.
+                self.data['dns']['srv'] = False
+                self.data['dns'][kind] = False
+
+            self.data['dns'][key].append({
+                'port': record.port,
+                'host': host,
+                'ips': ip4 + ip6,
+            })
+
+        # We consider IPv4/6 support ok if there is at least one record of the given type.
+        self.data['dns']['%s_ipv4' % kind] = has_ipv4
+        self.data['dns']['%s_ipv6' % kind] = has_ipv6
 
     def start_test(self):
         domain = self.server.domain
 
         self.data['dns'] = {
-            'client_records': [],
             'client': True,
-            'ipv4': True,
-            'ipv6': True,
-            'server_records': [],
+            'client_ipv4': True,
+            'client_ipv4': True,
+            'client_ipv6': True,
+            'client_ipv6': True,
+            'client_records': [],
             'server': True,
+            'server_records': [],
             'srv': True,
         }
 
