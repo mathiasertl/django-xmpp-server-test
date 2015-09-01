@@ -86,8 +86,7 @@ class ServerTest(models.Model):
             self.data['dns'][kind] = False
 
     def start_test(self):
-        server = self.server
-        domain = server.domain
+        domain = self.server.domain
 
         self.data['dns'] = {
             'client_records': [],
@@ -105,6 +104,9 @@ class ServerTest(models.Model):
 
         if self.data['dns']['srv'] is False or self.data['dns']['client'] is False or \
                 self.data['dns']['server'] is False:
+            # This server has some serious DNS test issues, it should not be listed.
+            self.server.listed = False
+            self.server.save()
             return  # no SRV records
 
         self.finished = True
