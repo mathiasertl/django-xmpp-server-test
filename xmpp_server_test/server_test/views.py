@@ -26,6 +26,7 @@ from .models import ServerTest
 
 
 class RootView(ListView, FormMixin):
+    template_name = 'server_test/root.html'
     queryset = Server.objects.all()
     form_class = DomainForm
 
