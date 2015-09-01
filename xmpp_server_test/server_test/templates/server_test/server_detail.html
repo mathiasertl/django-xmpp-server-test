@@ -5,6 +5,7 @@
 {% block pagetitle %}{% blocktrans with domain=server.domain %}Test results for {{ domain }}{% endblocktrans %}{%endblock %}
 
 {% block body %}
-<a href="{{ test.get_absolute_url }}">{% trans "Permalink to this report" %}</a>
+<a href="{{ test.get_absolute_url }}">{% trans "Permalink to this report" %}</a> | 
+<a href="{{ server.get_absolute_url }}?recheck=1">{% trans "Recheck" %}</a>
 {% include "server_test/test.html" %}
 {% endblock body %}
