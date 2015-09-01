@@ -9,11 +9,19 @@
             </tr>
             <tr>
                 <td>IPv4</td>
-                <td><p class="label label-success">{% if data.dns.ipv4 %}OK{% else %}Failed{% endif %}</p></td>
+                <td>{% if data.dns.client_ipv4 and data.dns.server_ipv4 %}
+                <p class="label label-success">{% trans "OK" %}</p>
+                {% else %}
+                <p class="label label-error">{% trans "Failed" %}</p>
+                {% endif %}</td>
             </tr>
             <tr>
                 <td>IPv6</td>
-                <td><p class="label label-success">{% if data.dns.ipv6 %}OK{% else %}Failed{% endif %}</p></td>
+                <td>{% if data.dns.client_ipv6 and data.dns.server_ipv6 %}
+                <p class="label label-success">{% trans "OK" %}</p>
+                {% else %}
+                <p class="label label-error">{% trans "Failed" %}</p>
+                {% endif %}</td>
             </tr>
         </table>
     </div>
