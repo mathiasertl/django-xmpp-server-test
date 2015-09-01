@@ -22,6 +22,7 @@ from django.views.generic.list import ListView
 from .forms import DomainForm
 from .models import Server
 from .models import ServerTest
+from .tasks import test_server
 
 
 class RootView(ListView, FormMixin):
@@ -38,6 +39,8 @@ class RootView(ListView, FormMixin):
         domain = form.cleaned_data['domain']
         server, _created = Server.objects.get_or_create(domain=domain)
         test = server.test()
+        if test.finished is False:
+            test_server.delay(test=test.pk)
         return HttpResponseRedirect(test.get_absolute_url())
 
     def post(self, request, *args, **kwargs):
@@ -66,6 +69,8 @@ class ServerView(DetailView):
         if request.GET.get('recheck') == '1':
             server = self.get_object()
             test = server.test()
+            if test.finished is False:
+                test_server.delay(test=test.pk)
             return HttpResponseRedirect(test.get_absolute_url())
         return super(ServerView, self).get(request, *args, **kwargs)
 
