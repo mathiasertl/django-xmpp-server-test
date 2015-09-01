@@ -113,11 +113,10 @@ class ServerTest(models.Model):
         if self.data['dns']['srv'] is False or self.data['dns']['client'] is False or \
                 self.data['dns']['server'] is False:
             # This server has some serious DNS test issues, it should not be listed.
+            self.finished = True
             self.server.listed = False
             self.server.save()
             return  # no SRV records
-
-        self.finished = True
 
     def __str__(self):
         return '%s: %s' % (self.server.domain, self.created.strftime('%Y-%m-%d %H:%M'))
