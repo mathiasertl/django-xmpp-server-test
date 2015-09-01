@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% blocktrans with domain=server.domain %}Results: {{ domain }}{% endblocktrans %}{%endblock %}
+{% block pagetitle %}{% blocktrans with domain=server.domain %}Test results for {{ domain }}{% endblocktrans %}{%endblock %}
+
+{% block body %}
+{% include "server_test/test.html" %}
+{% endblock body %}

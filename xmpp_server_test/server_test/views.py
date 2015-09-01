@@ -75,7 +75,6 @@ class ServerView(DetailView):
 
 
 class ServerTestView(DetailView):
-    template_name = 'server_test/server_detail.html'
     queryset = ServerTest.objects.select_related('server')
     context_object_name = 'test'
 
