@@ -36,6 +36,9 @@ class Server(models.Model):
             except ServerTest.DoesNotExist:
                 pass
 
+    def get_absolute_url(self):
+        return reverse('server-test:server', kwargs={'domain': self.domain, })
+
     def test(self):
         t = self.tests.create()
         t.start_test()

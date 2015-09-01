@@ -7,7 +7,7 @@
 
 {% block body %}
 <ul>{% for server in object_list %}
-    <li><a href="{% url 'server-test:server' domain=server.domain %}">{{ server.domain }}</a></li>
+    <li><a href="{{ server.get_absolute_url }}">{{ server.domain }}</a></li>
 {% endfor %}</ul>
 
 <form action="{% url 'server-test:overview' %}" method="post">
