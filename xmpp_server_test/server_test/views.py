@@ -26,7 +26,7 @@ from .models import ServerTest
 
 class RootView(ListView, FormMixin):
     template_name = 'server_test/root.html'
-    queryset = Server.objects.all()
+    queryset = Server.objects.filter(listed=True)
     form_class = DomainForm
 
     def get_context_data(self, **kwargs):
@@ -53,7 +53,7 @@ class RootView(ListView, FormMixin):
 
 
 class FullListView(ListView):
-    queryset = Server.objects.all()
+    queryset = Server.objects.filter(listed=True)
 
 
 class ServerView(DetailView):
