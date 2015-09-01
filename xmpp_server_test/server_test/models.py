@@ -23,6 +23,7 @@ from jsonfield import JSONField
 
 class Server(models.Model):
     domain = models.CharField(max_length=255)
+    listed = models.BooleanField(default=False)
 
     @property
     def latest_test(self):
