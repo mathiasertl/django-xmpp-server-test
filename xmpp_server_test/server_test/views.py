@@ -56,6 +56,10 @@ class RootView(ListView, FormMixin):
             return self.form_invalid(form)
 
 
+class FullListView(ListView):
+    queryset = Server.objects.all()
+
+
 class ServerView(DetailView):
     queryset = Server.objects.all()
     context_object_name = 'server'
