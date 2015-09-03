@@ -78,23 +78,24 @@ class ServerTest(models.Model):
 
             # do A/AAAA lookup
             try:
-                ip4 = [r.address for r in resolver.query(host, 'A')]
+                ip4 = {r.address: None for r in resolver.query(host, 'A')}
                 has_ipv4 = True
             except resolver.NXDOMAIN:
                 # The domain name is not at all defined.
                 self.data['dns']['srv'] = False
+                ip4 = {}
             except resolver.NoAnswer:
                 # The domain name is defined, but there just is no A record. This is not an error
                 # because there might be other records that provide an A record.
-                ip4 = []
+                ip4 = {}
 
             try:
-                ip6 = [r.address for r in resolver.query(host, 'AAAA')]
+                ip6 = {r.address: None for r in resolver.query(host, 'AAAA')}
                 has_ipv6 = True
             except resolver.NoAnswer:
                 # The domain name is defined, but there just is no AAAA record. This is not an error
                 # because there might be other records that provide an AAAA record.
-                ip6 = []
+                ip6 = {}
 
             if not ip4 and not ip6:
                 # This SRV target has neither an IPv4 nor an IPv6 record. We consider this faulty.
@@ -106,7 +107,7 @@ class ServerTest(models.Model):
             self.data['dns'][key].append({
                 'port': record.port,
                 'host': host,
-                'ips': ip4 + ip6,
+                'ips': dict(ip4, **ip6),  # ip4 and ip6 combined
             })
 
         # We consider IPv4/6 support ok if there is at least one record of the given type.
