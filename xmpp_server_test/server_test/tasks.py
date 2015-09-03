@@ -15,13 +15,30 @@
 # django-xmpp-server-test.  If not, see <http://www.gnu.org/licenses/>.
 
 from celery import shared_task
+from celery.utils.log import get_task_logger
 
 from .models import ServerTest
+from .utils import test_connection
+
+log = get_task_logger(__name__)
 
 
 @shared_task
 def test_server(test):
     test = ServerTest.objects.select_related('server').get(pk=test)
+    data = test.data
+
+    # Test client connectivity
+    for record in data['dns']['client_records']:
+        for ip in record['ips']:
+            record['ips'][ip] = test_connection(ip, record['port'])
+
+    # Test server connectivity
+    for record in data['dns']['server_records']:
+        for ip in record['ips']:
+            record['ips'][ip] = test_connection(ip, record['port'])
+
+    test.data = data
     test.finished = True
     test.server.listed = True
     test.server.save()
