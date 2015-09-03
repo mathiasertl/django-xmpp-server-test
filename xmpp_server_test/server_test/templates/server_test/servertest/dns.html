@@ -1,9 +1,11 @@
 {% load i18n server_test %}
 
 <h2 id="dns" class="page-header">{{ dns.status|status }} {% trans "DNS records" %}</h2>
+<p>{% blocktrans %}Check validity of client and server SRV records and the availablity of at IPv4
+and IPv6 records. Your server will only be listed if you have valid SRV records
+and you have valid IPv4 records. IPv6 support is currently optional.{% endblocktrans %}</p>
 <div class="row">
     <div class="col-md-5">
-        {% trans "Overview:" %}
         <table class="table table-bordered">
             <tr><td>{% trans "SRV records" %}</td><td>{{ dns.srv|status }}</td></tr>
             <tr><td>IPv4</td><td>{{ dns.ipv4|status }}</td></tr>

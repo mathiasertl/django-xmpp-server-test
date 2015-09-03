@@ -1,5 +1,17 @@
 {% load i18n server_test %}
 <h2 id="connectivity" class="page-header">{{ connect.status|status }} {% trans "Connectivity" %}</h2>
+<p>{% blocktrans %}Test that server is listening on all adress/port combinations
+indicated by your DNS setup.{% endblocktrans %}</p>
+
+{% if connect.status == False %}
+<div class="alert alert-danger" role="alert">
+    <strong>{% trans "Error:" %}</strong>
+    {% blocktrans %}The server does not appear to listen on all address/port combinations indicated
+    by your DNS setup. Please see below for further details. The site will not do any further
+    checks until these issues have been fixed.{% endblocktrans %}
+</div>
+{% endif %}
+
 <div class="row">
     <div class="col-md-5">
         <h3>{% trans "Client SRV records" %}</h3>
