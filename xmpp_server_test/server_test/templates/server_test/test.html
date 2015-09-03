@@ -1,3 +1,7 @@
 {% load i18n server_test %}
-{% with dns=data.dns %}{% include "server_test/servertest/dns.html" %}{% endwith %}
-{% with connect=data.connect %}{% include "server_test/servertest/connect.html" %}{% endwith %}
+{% with dns=data.dns %}
+    {% include "server_test/servertest/dns.html" %}
+{% endwith %}
+{% with connect=data.connect %}
+    {% include "server_test/servertest/connect.html" %}
+{% endwith %}
