@@ -39,6 +39,7 @@ def test_server(test):
             status = test_connection(ip, record['port'])
             if status is False:
                 data['connect']['status'] = False
+                test.server.listed = False
             connect['ips'][ip] = status
         data['connect']['client'].append(connect)
 
@@ -49,10 +50,20 @@ def test_server(test):
             status = test_connection(ip, record['port'])
             if status is False:
                 data['connect']['status'] = False
+                test.server.listed = False
             connect['ips'][ip] = status
         data['connect']['server'].append(connect)
 
     test.data = data
+    test.save()
+
+    if test.server.listed is False:
+        # This means that some connection failed.
+        test.finished = True
+        test.save()
+        test.server.save()
+        return
+
     test.finished = True
     test.server.listed = True
     test.server.save()
