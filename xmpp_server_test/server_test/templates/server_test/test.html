@@ -1,29 +1,3 @@
 {% load i18n server_test %}
-{% with dns=data.dns %}
-    {% include "server_test/servertest/dns.html" %}
-{% endwith %}
-
-<h2 id="connectivity" class="page-header">{{ data.connect.status|status }} {% trans "Connectivity" %}</h2>
-<div class="row">
-    <div class="col-md-5">
-        <h3>{% trans "Client SRV records" %}</h3>
-        <table class="table table-bordered">
-            {% for record in data.connect.client %}
-            <tr><th>{{ record.host }}:{{ record.port }}</th></tr>
-            {% for ip, status in record.ips.items %}
-            <tr><td>{{ ip }}</td><td>{{ status|status }}</td><tr>
-            {% endfor %}
-            {% endfor %}
-        </table>
-    </div>
-<div class="col-md-5"><h3>{% trans "Server SRV records" %}</h3>
-        <table class="table table-bordered">
-            {% for record in data.connect.server %}
-            <tr><th>{{ record.host }}:{{ record.port }}</th></tr>
-            {% for ip, status in record.ips.items %}
-            <tr><td>{{ ip }}</td><td>{{ status|status }}</td><tr>
-            {% endfor %}
-            {% endfor %}
-        </table>
-</div>
-</div>
+{% with dns=data.dns %}{% include "server_test/servertest/dns.html" %}{% endwith %}
+{% with connect=data.connect %}{% include "server_test/servertest/connect.html" %}{% endwith %}

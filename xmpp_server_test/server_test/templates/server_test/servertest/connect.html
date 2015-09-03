@@ -1,0 +1,19 @@
+{% load i18n server_test %}
+<h2 id="connectivity" class="page-header">{{ connect.status|status }} {% trans "Connectivity" %}</h2>
+<div class="row"><div class="col-md-5"><h3>{% trans "Client SRV records" %}</h3>
+    <table class="table table-bordered">
+        {% for record in connect.client %}
+        <tr><th>{{ record.host }}:{{ record.port }}</th></tr>
+        {% for ip, status in record.ips.items %}
+        <tr><td>{{ ip }}</td><td>{{ status|status }}</td><tr>
+        {% endfor %}{% endfor %}
+    </table>
+</div><div class="col-md-5"><h3>{% trans "Server SRV records" %}</h3>
+    <table class="table table-bordered">
+        {% for record in connect.server %}
+        <tr><th>{{ record.host }}:{{ record.port }}</th></tr>
+        {% for ip, status in record.ips.items %}
+        <tr><td>{{ ip }}</td><td>{{ status|status }}</td><tr>
+        {% endfor %}{% endfor %}
+    </table>
+</div></div>
