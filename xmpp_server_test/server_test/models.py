@@ -75,27 +75,27 @@ class ServerTest(models.Model):
 
         for record in srv_records:
             host = record.target.split(1)[0].to_text()
+            ip4, ip6 = [], []
 
             # do A/AAAA lookup
             try:
-                ip4 = {r.address: None for r in resolver.query(host, 'A')}
+                ip4 = [r.address for r in resolver.query(host, 'A')]
                 has_ipv4 = True
             except resolver.NXDOMAIN:
                 # The domain name is not at all defined.
                 self.data['dns']['srv'] = False
-                ip4 = {}
             except resolver.NoAnswer:
                 # The domain name is defined, but there just is no A record. This is not an error
                 # because there might be other records that provide an A record.
-                ip4 = {}
+                pass
 
             try:
-                ip6 = {r.address: None for r in resolver.query(host, 'AAAA')}
+                ip6 = [r.address for r in resolver.query(host, 'AAAA')]
                 has_ipv6 = True
             except resolver.NoAnswer:
                 # The domain name is defined, but there just is no AAAA record. This is not an error
                 # because there might be other records that provide an AAAA record.
-                ip6 = {}
+                pass
 
             if not ip4 and not ip6:
                 # This SRV target has neither an IPv4 nor an IPv6 record. We consider this faulty.
@@ -107,28 +107,35 @@ class ServerTest(models.Model):
             self.data['dns'][key].append({
                 'port': record.port,
                 'host': host,
-                'ips': dict(ip4, **ip6),  # ip4 and ip6 combined
+                'ips': ip4 + ip6,  # ip4 and ip6 combined
             })
 
         # We consider IPv4/6 support ok if there is at least one record of the given type.
         self.data['dns']['%s_ipv4' % kind] = has_ipv4
         self.data['dns']['%s_ipv6' % kind] = has_ipv6
+        self.data['dns']['ipv4'] = has_ipv4 and self.data['dns']['ipv4']
+        self.data['dns']['ipv6'] = has_ipv6 and self.data['dns']['ipv6']
 
     def start_test(self):
         domain = self.server.domain
 
+        # set some default values...
         self.data['dns'] = {
+            'status': None,
             'client': True,
             'client_ipv4': True,
             'client_ipv4': True,
-            'client_ipv6': True,
-            'client_ipv6': True,
+            'server_ipv6': True,
+            'server_ipv6': True,
             'client_records': [],
             'ipv4': True,
             'ipv6': True,
             'server': True,
             'server_records': [],
             'srv': True,
+        }
+        self.data['connect'] = {
+            'status': None,
         }
 
         # Do client SRV lookups
@@ -140,6 +147,8 @@ class ServerTest(models.Model):
         self.data['dns']['ipv6'] = self.data['dns']['client_ipv6'] \
             and self.data['dns']['client_ipv6']
 
+        self.data['dns']['status'] = self.data['dns']['srv'] and self.data['dns']['ipv4'] \
+            and self.data['dns']['ipv6']
         if self.data['dns']['srv'] is False or self.data['dns']['client'] is False or \
                 self.data['dns']['server'] is False:
             # This server has some serious DNS test issues, it should not be listed.
