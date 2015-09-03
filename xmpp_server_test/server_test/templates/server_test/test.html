@@ -1,32 +1,7 @@
 {% load i18n server_test %}
-<h2 id="dns" class="page-header">{{ data.dns.status|status }} {% trans "DNS records" %}</h2>
-<div class="row">
-    <div class="col-md-5">
-        {% trans "Overview:" %}
-        <table class="table table-bordered">
-            <tr>
-                <td>SRV records</td>
-                <td><p class="label label-success">{% if data.dns.srv %}OK{% else %}Failed{% endif %}</p></td>
-            </tr>
-            <tr>
-                <td>IPv4</td>
-                <td>{% if data.dns.ipv4 %}
-                <p class="label label-success">{% trans "OK" %}</p>
-                {% else %}
-                <p class="label label-error">{% trans "Failed" %}</p>
-                {% endif %}</td>
-            </tr>
-            <tr>
-                <td>IPv6</td>
-                <td>{% if data.dns.ipv6 %}
-                <p class="label label-success">{% trans "OK" %}</p>
-                {% else %}
-                <p class="label label-error">{% trans "Failed" %}</p>
-                {% endif %}</td>
-            </tr>
-        </table>
-    </div>
-</div>
+{% with dns=data.dns %}
+    {% include "server_test/servertest/dns.html" %}
+{% endwith %}
 
 <h2 id="connectivity" class="page-header">{{ data.connect.status|status }} {% trans "Connectivity" %}</h2>
 <div class="row">
