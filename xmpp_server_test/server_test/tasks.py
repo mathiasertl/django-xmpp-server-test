@@ -26,17 +26,31 @@ log = get_task_logger(__name__)
 @shared_task
 def test_server(test):
     test = ServerTest.objects.select_related('server').get(pk=test)
+
     data = test.data
+    data['connect']['status'] = True
+    data['connect']['client'] = []
+    data['connect']['server'] = []
 
     # Test client connectivity
     for record in data['dns']['client_records']:
+        connect = {'host': record['host'], 'port': record['port'], 'ips': {}, }
         for ip in record['ips']:
-            record['ips'][ip] = test_connection(ip, record['port'])
+            status = test_connection(ip, record['port'])
+            if status is False:
+                data['connect']['status'] = False
+            connect['ips'][ip] = status
+        data['connect']['client'].append(connect)
 
     # Test server connectivity
     for record in data['dns']['server_records']:
+        connect = {'host': record['host'], 'port': record['port'], 'ips': {}, }
         for ip in record['ips']:
-            record['ips'][ip] = test_connection(ip, record['port'])
+            status = test_connection(ip, record['port'])
+            if status is False:
+                data['connect']['status'] = False
+            connect['ips'][ip] = status
+        data['connect']['server'].append(connect)
 
     test.data = data
     test.finished = True
