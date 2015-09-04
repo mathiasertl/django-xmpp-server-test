@@ -50,8 +50,8 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'htmlmin.middleware.HtmlMinifyMiddleware',
-    'htmlmin.middleware.MarkRequestMiddleware',
+    'server_test.htmlmin.middleware.HtmlMinifyMiddleware',
+    'server_test.htmlmin.middleware.MarkRequestMiddleware',
 )
 
 ROOT_URLCONF = 'xmpp_server_test.urls'
