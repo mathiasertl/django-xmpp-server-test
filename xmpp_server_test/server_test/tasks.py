@@ -17,6 +17,8 @@
 from celery import shared_task
 from celery.utils.log import get_task_logger
 
+from django.conf import settings
+
 from .models import ServerTest
 from .utils import test_connection
 
@@ -57,7 +59,8 @@ def test_server(test):
     test.data = data
     test.save()
 
-    if test.server.listed is False:
+    # If the server is not marked as listed, we consider it broken. Not for DEBUG of course.
+    if test.server.listed is False and settings.DEBUG is False:
         # This means that some connection failed.
         test.finished = True
         test.save()
