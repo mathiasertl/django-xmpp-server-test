@@ -17,7 +17,7 @@ indicated by your DNS setup.{% endblocktrans %}</p>
         <h3>{% trans "Client SRV records" %}</h3>
         <table class="table table-bordered">
             {% for record in connect.client %}
-                <tr><th>{{ record.host }}:{{ record.port }}</th></tr>
+                <tr><th colspan="2">{{ record.host }}:{{ record.port }}</th></tr>
                 {% for ip, status in record.ips.items %}
                     <tr><td>{{ ip }}</td><td>{{ status|status }}</td><tr>
                 {% endfor %}
@@ -28,7 +28,7 @@ indicated by your DNS setup.{% endblocktrans %}</p>
         <h3>{% trans "Server SRV records" %}</h3>
         <table class="table table-bordered">
             {% for record in connect.server %}
-                <tr><th>{{ record.host }}:{{ record.port }}</th></tr>
+                <tr><th colspan="2">{{ record.host }}:{{ record.port }}</th></tr>
                 {% for ip, status in record.ips.items %}
                     <tr><td>{{ ip }}</td><td>{{ status|status }}</td><tr>
                 {% endfor %}
