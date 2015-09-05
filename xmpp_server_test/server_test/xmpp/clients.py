@@ -84,16 +84,13 @@ class StreamFeatureClient(ClientXMPP):
         self.test.data['core']['bind']['status'] = 'bind' in self._stream_feature_stanzas
 
         # process XEPs
-        self.test.data['xeps']['0077']['status'] = 'register' in self._stream_feature_stanzas
-        if 'auth' in self._stream_feature_stanzas:
-            self.test.data['xeps']['0078']['status'] = True
-        else:
-            self.test.data['xeps']['0078']['status'] = 'no'
-        self.test.data['xeps']['0079']['status'] = 'amp' in self._stream_feature_stanzas
-        self.test.data['xeps']['0115']['status'] = 'c' in self._stream_feature_stanzas
-        self.test.data['xeps']['0138']['status'] = 'compress' in self._stream_feature_stanzas
-        self.test.data['xeps']['0198']['status'] = 'sm' in self._stream_feature_stanzas
-        self.test.data['xeps']['0352']['status'] = 'csi' in self._stream_feature_stanzas
+        self.test.data['xeps']['0077']['status'] = 'register' in self._stream_feature_stanzas or 'no'
+        self.test.data['xeps']['0078']['status'] = 'auth' in self._stream_feature_stanzas or 'no'
+        self.test.data['xeps']['0079']['status'] = 'amp' in self._stream_feature_stanzas or 'no'
+        self.test.data['xeps']['0115']['status'] = 'c' in self._stream_feature_stanzas or 'no'
+        self.test.data['xeps']['0138']['status'] = 'compress' in self._stream_feature_stanzas or 'no'
+        self.test.data['xeps']['0198']['status'] = 'sm' in self._stream_feature_stanzas or 'no'
+        self.test.data['xeps']['0352']['status'] = 'csi' in self._stream_feature_stanzas or 'no'
 
     def test_xep0092(self):
         log.info('### Trying to get software version...')
@@ -105,7 +102,10 @@ class StreamFeatureClient(ClientXMPP):
                 log.error('[XEP-0079]: Received IQ stanza of type "%s".', version['type'])
                 self.test.data['xeps']['0092']['status'] = False
         except IqError as e:
-            self.test.data['xeps']['0092']['status'] = False
+            if e.condition == 'feature-not-implemented':
+                self.test.data['xeps']['0092']['status'] = 'no'
+            else:
+                self.test.data['xeps']['0092']['status'] = False
             self.test.data['xeps']['0092']['condition'] = e.condition
         except Exception as e:
             log.error("[XEP-0079] %s: %s", type(e).__name__, e)

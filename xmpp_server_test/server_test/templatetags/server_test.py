@@ -35,6 +35,9 @@ _xep_names = {
     '0288': 'Bidirectional Server-to-Server Connections',
     '0352': 'Client State Indication',
 }
+_conditions = {
+    'feature-not-implemented': _('Not supported.'),
+}
 
 
 @register.filter
@@ -62,6 +65,9 @@ def xep(value, number):
 
     td_name = '<td><a href="http://www.xmpp.org/extensions/xep-%s.html">%s</a></td>' % (number, name)
     td_status = '<td>%s</td>' % status(value[number]['status'])
-    td_notes = '<td>%s</td>' % value[number].get('notes', '')
+    if value[number].get('condition') and value[number]['condition'] in _conditions:
+        td_notes = '<td>%s</td>' % _conditions[value[number]['condition']]
+    else:
+        td_notes = '<td>%s</td>' % value[number].get('notes', '')
     row = '<tr>%s%s%s</tr>' % (td_name, td_status, td_notes)
     return mark_safe(row)
