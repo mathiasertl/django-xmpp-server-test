@@ -1,0 +1,20 @@
+{% load i18n server_test %}
+
+<h2 id="xeps" class="page-header">{{ xep.status|status }} {% trans "XMPP Enhancement proposals" %}</h2>
+<p>{% blocktrans %}Various optional features of the XMPP protocol. Generally more support means a better
+user experience, but you might turn of some features deliberately.{% endblocktrans %}</p>
+<div class="row">
+    <div class="col-md-5">
+        <table class="table table-bordered">
+            <tr><th>{% trans "XEP" %}</th><th>{% trans "Support" %}</th><th><{% trans "Notes" %}</th></tr>
+            {{ xeps.details|xep:"0030" }}
+            {{ xeps.details|xep:"0077" }}
+            {{ xeps.details|xep:"0078" }}
+            {{ xeps.details|xep:"0092" }}
+            {{ xeps.details|xep:"0138" }}
+            {{ xeps.details|xep:"0198" }}
+            {{ xeps.details|xep:"0220" }}
+            {{ xeps.details|xep:"0288" }}
+        </table>
+    </div>
+</div>
