@@ -101,6 +101,10 @@ class StreamFeatureClient(ClientXMPP):
         except IqError as e:
             self.test.data['xeps']['0092']['status'] = False
             log.info('# dir(e): %s', dir(e))
+            log.info('# iq: %s', e.iq)
+            log.info('# text: %s', e.text)
+            log.info('# condition: %s', e.condition)
+            log.info('# etype: %s', e.etype)
         except Exception as e:
             log.error("[XEP-0079] %s: %s", type(e).__name__, e)
             self.test.data['xeps']['0092']['status'] = False
