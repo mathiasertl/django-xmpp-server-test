@@ -151,6 +151,7 @@ class ServerTest(models.Model):
             '0078': {'status': None, },  # Non-SASL Authentication
             '0079': {'status': None, },  # Advanced Message Processing
             '0092': {'status': None, },  # Software Version
+            '0115': {'status': None, },  # Entity Capabilities
             '0138': {'status': None, },  # Stream Compression
             '0198': {'status': None, },  # Stream Management
             '0220': {'status': None, },  # Server Dialback
