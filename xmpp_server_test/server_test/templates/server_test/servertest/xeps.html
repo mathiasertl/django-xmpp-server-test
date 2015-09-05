@@ -4,9 +4,9 @@
 <p>{% blocktrans %}Various optional features of the XMPP protocol. Generally more support means a better
 user experience, but you might turn of some features deliberately.{% endblocktrans %}</p>
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-8">
         <table class="table table-bordered">
-            <tr><th>{% trans "XEP" %}</th><th>{% trans "Support" %}</th><th>{% trans "notes" %}</th></tr>
+            <tr><th>{% trans "XEP" %}</th><th>{% trans "Support" %}</th><th>{% trans "Notes" %}</th></tr>
             {{ xeps|xep:"0030" }}
             {{ xeps|xep:"0077" }}
             {{ xeps|xep:"0078" }}
