@@ -16,6 +16,7 @@
 
 from dns import resolver
 
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
 
@@ -89,13 +90,14 @@ class ServerTest(models.Model):
                 # because there might be other records that provide an A record.
                 pass
 
-            try:
-                ip6 = [r.address for r in resolver.query(host, 'AAAA')]
-                has_ipv6 = True
-            except resolver.NoAnswer:
-                # The domain name is defined, but there just is no AAAA record. This is not an error
-                # because there might be other records that provide an AAAA record.
-                pass
+            if settings.USE_IP6:
+                try:
+                    ip6 = [r.address for r in resolver.query(host, 'AAAA')]
+                    has_ipv6 = True
+                except resolver.NoAnswer:
+                    # The domain name is defined, but there just is no AAAA record. This is not an error
+                    # because there might be other records that provide an AAAA record.
+                    pass
 
             if not ip4 and not ip6:
                 # This SRV target has neither an IPv4 nor an IPv6 record. We consider this faulty.

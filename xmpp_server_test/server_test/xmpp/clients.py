@@ -40,7 +40,7 @@ log = logging.getLogger(__name__)
 class StreamFeatureClient2(ClientXMPP):
     def __init__(self, *args, **kwargs):
         super(StreamFeatureClient2, self).__init__(*args, **kwargs)
-        self.use_ipv6 = False
+        self.use_ipv6 = settings.USE_IP6
         self.auto_reconnect = False
 
         # disable the stock rosterver plugin
