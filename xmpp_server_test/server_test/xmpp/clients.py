@@ -87,7 +87,7 @@ class StreamFeatureClient(ClientXMPP):
         self.test.data['xeps']['0077']['status'] = 'register' in self._stream_feature_stanzas
         self.test.data['xeps']['0078']['status'] = 'auth' in self._stream_feature_stanzas
         self.test.data['xeps']['0079']['status'] = 'amp' in self._stream_feature_stanzas
-        self.test.data['core']['0115']['status'] = 'c' in self._stream_feature_stanzas
+        self.test.data['xeps']['0115']['status'] = 'c' in self._stream_feature_stanzas
         self.test.data['xeps']['0138']['status'] = 'compress' in self._stream_feature_stanzas
         self.test.data['xeps']['0198']['status'] = 'sm' in self._stream_feature_stanzas
         self.test.data['xeps']['0352']['status'] = 'csi' in self._stream_feature_stanzas
@@ -103,11 +103,7 @@ class StreamFeatureClient(ClientXMPP):
                 self.test.data['xeps']['0092']['status'] = False
         except IqError as e:
             self.test.data['xeps']['0092']['status'] = False
-            log.info('# dir(e): %s', dir(e))
-            log.info('# iq: %s', e.iq)
-            log.info('# text: %s', e.text)
-            log.info('# condition: %s', e.condition)
-            log.info('# etype: %s', e.etype)
+            self.test.data['xeps']['0092']['condition'] = e.condition
         except Exception as e:
             log.error("[XEP-0079] %s: %s", type(e).__name__, e)
             self.test.data['xeps']['0092']['status'] = False
