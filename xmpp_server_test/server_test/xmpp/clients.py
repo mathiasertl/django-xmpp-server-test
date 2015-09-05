@@ -39,10 +39,10 @@ log = logging.getLogger(__name__)
 
 class StreamFeatureClient(ClientXMPP):
     def __init__(self, test, *args, **kwargs):
-        self.servertest = test
         super(StreamFeatureClient, self).__init__(*args, **kwargs)
         self.use_ipv6 = settings.USE_IP6
         self.auto_reconnect = False
+        self.test = test
 
         # disable the stock rosterver plugina
         self.unregister_feature('rosterver', 9000)
@@ -73,22 +73,23 @@ class StreamFeatureClient(ClientXMPP):
         self.plugin.enable(name)
 
     def process_stream_features(self):
-        self.servertest.data['xeps']['0077']['status'] = 'register' in self._stream_feature_stanzas
-        self.servertest.data['xeps']['0078']['status'] = 'auth' in self._stream_feature_stanzas
-        self.servertest.data['xeps']['0079']['status'] = 'amp' in self._stream_feature_stanzas
-        self.servertest.data['xeps']['0138']['status'] = 'compress' in self._stream_feature_stanzas
-        self.servertest.data['xeps']['0198']['status'] = 'sm' in self._stream_feature_stanzas
+        self.test.data['xeps']['details']['0077']['status'] = 'register' in self._stream_feature_stanzas
+        self.test.data['xeps']['details']['0078']['status'] = 'auth' in self._stream_feature_stanzas
+        self.test.data['xeps']['details']['0079']['status'] = 'amp' in self._stream_feature_stanzas
+        self.test.data['xeps']['details']['0138']['status'] = 'compress' in self._stream_feature_stanzas
+        self.test.data['xeps']['details']['0198']['status'] = 'sm' in self._stream_feature_stanzas
 
     def test_xep0092(self):
         log.info('### Trying to get software version...')
         try:
             version = self['xep_0092'].get_version(self.boundjid.domain, ifrom=self.boundjid.full)
             if version['type'] == 'result':
-                self.servertest.data['xeps']['0092']['status'] = False
+                self.test.data['xeps']['details']['0092']['status'] = True
             else:
-                self.servertest.data['xeps']['0092']['status'] = False
+                self.test.data['xeps']['details']['0092']['status'] = False
         except:
-            self.servertest.data['xeps']['0092']['status'] = False
+            log.error("Could not get software version.")
+            self.test.data['xeps']['details']['0092']['status'] = False
 
     def _handle_stream_features(self, features):
         """Collect incoming stream features.
