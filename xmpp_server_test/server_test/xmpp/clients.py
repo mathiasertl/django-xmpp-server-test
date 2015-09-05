@@ -116,7 +116,7 @@ class StreamFeatureClient(ClientXMPP):
         log.info('### Stream negotiated.')
         self.process_stream_features()
         self.test_xep0092()
-        #self.disconnect()
+        self.disconnect()
 
     def session_start(self, event):
         pass
