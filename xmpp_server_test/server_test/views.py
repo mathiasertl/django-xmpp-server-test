@@ -37,10 +37,12 @@ class RootView(ListView, FormMixin):
 
     def form_valid(self, form):
         domain = form.cleaned_data['domain']
+        username = form.cleaned_data['username']
+        password = form.cleaned_data['password']
         server, _created = Server.objects.get_or_create(domain=domain)
         test = server.test()
         if test.finished is False:
-            test_server.delay(test=test.pk)
+            test_server.delay(test=test.pk, username=username, password=password)
         return HttpResponseRedirect(test.get_absolute_url())
 
     def post(self, request, *args, **kwargs):
