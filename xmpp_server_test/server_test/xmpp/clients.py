@@ -22,13 +22,13 @@ from django.conf import settings
 from sleekxmpp.clientxmpp import ClientXMPP
 from sleekxmpp.plugins.base import load_plugin
 
-from .plugins import amp
-from .plugins import auth
+#from .plugins import amp
+#from .plugins import auth
 from .plugins import bind
 from .plugins import caps
 from .plugins import compression
 from .plugins import csi
-from .plugins import dialback
+#from .plugins import dialback
 from .plugins import register
 from .plugins import rosterver
 from .plugins import session
@@ -44,14 +44,12 @@ class StreamFeatureClient(ClientXMPP):
         self.auto_reconnect = False
 
         # disable the stock rosterver plugina
-        log.info('# Order before: %s', self._stream_feature_handlers)
         self.unregister_feature('rosterver', 9000)
         self.unregister_feature('bind', 10000)
         self.unregister_feature('session', 10001)
         self.replace_plugin('feature_rosterver', rosterver)
         self.replace_plugin('feature_bind', bind)
         self.replace_plugin('feature_session', session)
-        log.info('# Order  after: %s', self._stream_feature_handlers)
 
         # register additional known plugins
         self.register_plugin('feature_caps', module=caps)
