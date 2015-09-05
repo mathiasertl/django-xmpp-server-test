@@ -22,6 +22,21 @@ from django.utils.translation import ugettext as _
 register = template.Library()
 
 
+_xep_names = {
+    '0030': 'Service Discovery',
+    '0077': 'In-Band Registration',
+    '0078': 'Non-SASL Authentication',
+    '0079': 'Advanced Message Processing',
+    '0092': 'Software Version',
+    '0115': 'Entity Capabilities',
+    '0138': 'Stream Compression',
+    '0198': 'Stream Management',
+    '0220': 'Server Dialback',
+    '0288': 'Bidirectional Server-to-Server Connections',
+    '0352': 'Client State Indication',
+}
+
+
 @register.filter
 def status(value):
     text = '<span class="label '
@@ -38,7 +53,12 @@ def status(value):
 
 @register.filter
 def xep(value, number):
-    td_name = '<td><a href="http://www.xmpp.org/extensions/xep-%s.html">XEP-%s</a></td>' % (number, number)
+    if _xep_names.get(number):
+        name = 'XEP-%s: %s' % (number, _xep_names[number])
+    else:
+        name = 'XEP-%s' % number
+
+    td_name = '<td><a href="http://www.xmpp.org/extensions/xep-%s.html">%s</a></td>' % (number, name)
     td_status = '<td>%s</td>' % status(value[number]['status'])
     td_notes = '<td>%s</td>' % value[number].get('notes', '')
     row = '<tr>%s%s%s</tr>' % (td_name, td_status, td_notes)
