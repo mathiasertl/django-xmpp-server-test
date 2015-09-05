@@ -20,6 +20,7 @@ import re
 from django.conf import settings
 
 from sleekxmpp.clientxmpp import ClientXMPP
+from sleekxmpp.exceptions import IqError
 from sleekxmpp.plugins.base import load_plugin
 
 #from .plugins import amp
@@ -73,6 +74,13 @@ class StreamFeatureClient(ClientXMPP):
         self.plugin.enable(name)
 
     def process_stream_features(self):
+        # process core features
+        self.test.data['core']['tls']['status'] = 'starttls' in self._stream_feature_stanzas
+        self.test.data['core']['session']['status'] = 'session' in self._stream_feature_stanzas
+        self.test.data['core']['sasl']['status'] = 'sasl' in self._stream_feature_stanzas
+        self.test.data['core']['bind']['status'] = 'bind' in self._stream_feature_stanzas
+
+        # process XEPs
         self.test.data['xeps']['details']['0077']['status'] = 'register' in self._stream_feature_stanzas
         self.test.data['xeps']['details']['0078']['status'] = 'auth' in self._stream_feature_stanzas
         self.test.data['xeps']['details']['0079']['status'] = 'amp' in self._stream_feature_stanzas
@@ -86,9 +94,13 @@ class StreamFeatureClient(ClientXMPP):
             if version['type'] == 'result':
                 self.test.data['xeps']['details']['0092']['status'] = True
             else:
+                log.error('[XEP-0079]: Received IQ stanza of type "%s".', version['type'])
                 self.test.data['xeps']['details']['0092']['status'] = False
-        except:
-            log.error("Could not get software version.")
+        except IqError as e:
+            self.test.data['xeps']['details']['0092']['status'] = False
+            log.info('# dir(e): %s', dir(e))
+        except Exception as e:
+            log.error("[XEP-0079] %s: %s", type(e).__name__, e)
             self.test.data['xeps']['details']['0092']['status'] = False
 
     def _handle_stream_features(self, features):
@@ -116,6 +128,8 @@ class StreamFeatureClient(ClientXMPP):
         log.info('### Stream negotiated.')
         self.process_stream_features()
         self.test_xep0092()
+        self.test.data['core']['status'] = True
+        self.test.data['xeps']['status'] = True
         self.disconnect()
 
     def session_start(self, event):
