@@ -77,17 +77,20 @@ class StreamFeatureClient(ClientXMPP):
         log.info('### Stream features: %s', sorted(self._stream_feature_stanzas))
 
         # process core features
+        #TODO: Details for TLS, SALS authentication
         self.test.data['core']['tls']['status'] = 'starttls' in self._stream_feature_stanzas
         self.test.data['core']['session']['status'] = 'session' in self._stream_feature_stanzas
-        self.test.data['core']['sasl']['status'] = 'sasl' in self._stream_feature_stanzas
+        self.test.data['core']['sasl']['status'] = 'mechanisms' in self._stream_feature_stanzas
         self.test.data['core']['bind']['status'] = 'bind' in self._stream_feature_stanzas
 
         # process XEPs
         self.test.data['xeps']['0077']['status'] = 'register' in self._stream_feature_stanzas
         self.test.data['xeps']['0078']['status'] = 'auth' in self._stream_feature_stanzas
         self.test.data['xeps']['0079']['status'] = 'amp' in self._stream_feature_stanzas
+        self.test.data['core']['0115']['status'] = 'c' in self._stream_feature_stanzas
         self.test.data['xeps']['0138']['status'] = 'compress' in self._stream_feature_stanzas
         self.test.data['xeps']['0198']['status'] = 'sm' in self._stream_feature_stanzas
+        self.test.data['xeps']['0352']['status'] = 'csi' in self._stream_feature_stanzas
 
     def test_xep0092(self):
         log.info('### Trying to get software version...')
