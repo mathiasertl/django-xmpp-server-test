@@ -139,6 +139,30 @@ class ServerTest(models.Model):
         self.data['connect'] = {
             'status': None,
         }
+        self.data['core'] = {
+            'status': None,
+            'details': {
+                'bind': {'status': None, },  # Resource Binding
+                'mechanisms': {'status': None, },  # SASL Authentication
+                'session': {'status': None, },  # Session Establishment
+                'startls': {'status': None, },  # TLS
+            },
+        }
+        self.data['xeps'] = {
+            'status': None,
+            'details': {
+                '0030': {'status': None, },  # Service Discovery
+                '0077': {'status': None, },  # In-Band Registration
+                '0078': {'status': None, },  # Non-SASL Authentication
+                '0079': {'status': None, },  # Advanced Message Processing
+                '0092': {'status': None, },  # Software Version
+                '0138': {'status': None, },  # Stream Compression
+                '0198': {'status': None, },  # Stream Management
+                '0220': {'status': None, },  # Server Dialback
+                '0288': {'status': None, },  # Bidirectional Server-to-Server Connections
+                '0352': {'status': None, },  # Client State Indication
+            },
+        }
 
         # Do client SRV lookups
         self.srv_lookup('client', domain)
