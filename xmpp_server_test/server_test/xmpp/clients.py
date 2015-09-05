@@ -24,32 +24,33 @@ from sleekxmpp.plugins.base import load_plugin
 
 #from .plugins import amp
 #from .plugins import auth
-from .plugins import bind
+#from .plugins import bind
 from .plugins import caps
 from .plugins import compression
 from .plugins import csi
 #from .plugins import dialback
 from .plugins import register
 from .plugins import rosterver
-from .plugins import session
+#from .plugins import session
 from .plugins import sm
 
 log = logging.getLogger(__name__)
 
 
 class StreamFeatureClient(ClientXMPP):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, test, *args, **kwargs):
+        self.servertest = test
         super(StreamFeatureClient, self).__init__(*args, **kwargs)
         self.use_ipv6 = settings.USE_IP6
         self.auto_reconnect = False
 
         # disable the stock rosterver plugina
         self.unregister_feature('rosterver', 9000)
-        self.unregister_feature('bind', 10000)
-        self.unregister_feature('session', 10001)
+#        self.unregister_feature('bind', 10000)
+#        self.unregister_feature('session', 10001)
         self.replace_plugin('feature_rosterver', rosterver)
-        self.replace_plugin('feature_bind', bind)
-        self.replace_plugin('feature_session', session)
+#        self.replace_plugin('feature_bind', bind)
+#        self.replace_plugin('feature_session', session)
 
         # register additional known plugins
         self.register_plugin('feature_caps', module=caps)
@@ -58,7 +59,12 @@ class StreamFeatureClient(ClientXMPP):
         self.register_plugin('feature_sm', module=sm)
         self.register_plugin('feature_csi', module=csi)
 
+        # register various xep plugins
+        self.register_plugin('xep_0030')  # service discovery
+        self.register_plugin('xep_0092')  # software version
+
         self.add_event_handler('stream_negotiated', self._stream_negotiated)
+        self.add_event_handler("session_start", self.session_start)
         self._stream_feature_stanzas = {}
 
     def replace_plugin(self, name, module):
@@ -88,4 +94,13 @@ class StreamFeatureClient(ClientXMPP):
         return super(StreamFeatureClient, self)._handle_stream_features(features)
 
     def _stream_negotiated(self, *args, **kwargs):
+        log.info('### Stream negotiated.')
+        log.info('### Trying to get software version...')
+        #version = self['xep_0092'].get_version(self.boundjid.domain, self.boundjid.full)
+        # jabber.ccc.de is not implemented!
+        version = self['xep_0092'].get_version('jabber.org', self.boundjid.full)
+        log.info('### Version: %s', version)
         self.disconnect()
+
+    def session_start(self, event):
+        pass
