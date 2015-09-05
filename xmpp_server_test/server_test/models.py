@@ -143,9 +143,9 @@ class ServerTest(models.Model):
             'status': None,
             'details': {
                 'bind': {'status': None, },  # Resource Binding
-                'mechanisms': {'status': None, },  # SASL Authentication
+                'sasl': {'status': None, },  # SASL Authentication
                 'session': {'status': None, },  # Session Establishment
-                'startls': {'status': None, },  # TLS
+                'tls': {'status': None, },  # TLS
             },
         }
         self.data['xeps'] = {
