@@ -105,6 +105,7 @@ class StreamFeatureClient(ClientXMPP):
             if e.condition == 'feature-not-implemented':
                 self.test.data['xeps']['0092']['status'] = 'no'
             else:
+                log.error('[XEP-0079]: Unhandled condition: %s', e.condition)
                 self.test.data['xeps']['0092']['status'] = False
             self.test.data['xeps']['0092']['condition'] = e.condition
         except Exception as e:
