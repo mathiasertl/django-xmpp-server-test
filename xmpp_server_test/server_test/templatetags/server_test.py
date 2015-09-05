@@ -34,3 +34,12 @@ def status(value):
     else:
         text += 'label-danger">' + _('Unknown') + '</span>'
     return mark_safe(text)
+
+
+@register.filter
+def xep(value, number):
+    td_name = '<td><a href="http://www.xmpp.org/extensions/xep-%s.html">XEP-%s</a></td>' % (number, number)
+    td_status = '<td>%s</td>' % status(value[number]['status'])
+    td_notes = '<td>%s</td>' % value[number].get('notes', '')
+    row = '<tr>%s%s%s</tr>' % (td_name, td_status, td_notes)
+    return mark_safe(row)
