@@ -37,17 +37,21 @@ from .plugins import sm
 log = logging.getLogger(__name__)
 
 
-class StreamFeatureClient2(ClientXMPP):
+class StreamFeatureClient(ClientXMPP):
     def __init__(self, *args, **kwargs):
-        super(StreamFeatureClient2, self).__init__(*args, **kwargs)
+        super(StreamFeatureClient, self).__init__(*args, **kwargs)
         self.use_ipv6 = settings.USE_IP6
         self.auto_reconnect = False
 
-        # disable the stock rosterver plugin
-        self.plugin.disable('feature_rosterver')
+        # disable the stock rosterver plugina
+        log.info('# Order before: %s', self._stream_feature_handlers)
         self.unregister_feature('rosterver', 9000)
-        load_plugin('feature_rosterver', rosterver)
-        self.plugin.enable('feature_rosterver')
+        self.unregister_feature('bind', 10000)
+        self.unregister_feature('session', 10001)
+        self.replace_plugin('feature_rosterver', rosterver)
+        self.replace_plugin('feature_bind', bind)
+        self.replace_plugin('feature_session', session)
+        log.info('# Order  after: %s', self._stream_feature_handlers)
 
         # register additional known plugins
         self.register_plugin('feature_caps', module=caps)
@@ -55,9 +59,14 @@ class StreamFeatureClient2(ClientXMPP):
         self.register_plugin('feature_register', module=register)
         self.register_plugin('feature_sm', module=sm)
         self.register_plugin('feature_csi', module=csi)
-        self.register_plugin('feature_rosterver', module=rosterver)
+        #self.register_plugin('feature_rosterver', module=rosterver)
 
         self.add_event_handler('stream_negotiated', self._stream_negotiated)
+
+    def replace_plugin(self, name, module):
+        self.plugin.disable(name)
+        load_plugin(name, module)
+        self.plugin.enable(name)
 
     def _handle_stream_features(self, features):
         log.info('### Features: %s', sorted(features.get_features().keys()))
@@ -69,7 +78,8 @@ class StreamFeatureClient2(ClientXMPP):
         if unhandled:
             log.error("Unhandled stream features: %s", unhandled)
 
-        return super(StreamFeatureClient2, self)._handle_stream_features(features)
+        return super(StreamFeatureClient, self)._handle_stream_features(features)
 
     def _stream_negotiated(self, *args, **kwargs):
+        log.info('### Stream negotiated')
         self.disconnect()
