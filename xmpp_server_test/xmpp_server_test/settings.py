@@ -105,6 +105,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 HTML_MINIFY = True
+USE_IP6 = True
 
 try:
     from .localsettings import *
