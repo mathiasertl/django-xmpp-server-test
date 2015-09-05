@@ -57,9 +57,9 @@ class StreamFeatureClient(ClientXMPP):
         self.register_plugin('feature_register', module=register)
         self.register_plugin('feature_sm', module=sm)
         self.register_plugin('feature_csi', module=csi)
-        #self.register_plugin('feature_rosterver', module=rosterver)
 
         self.add_event_handler('stream_negotiated', self._stream_negotiated)
+        self._stream_feature_stanzas = {}
 
     def replace_plugin(self, name, module):
         self.plugin.disable(name)
@@ -67,17 +67,25 @@ class StreamFeatureClient(ClientXMPP):
         self.plugin.enable(name)
 
     def _handle_stream_features(self, features):
-        log.info('### Features: %s', sorted(features.get_features().keys()))
+        """Collect incoming stream features.
+
+        This method is invoked multiple times if (e.g. after starttls) the stream is renegotiated.
+        """
+        if 'starttls' in features['features']:  # Reset stream features after starttls
+            self._stream_feature_stanzas = {
+                'starttls': features['starttls'],
+            }
+        else:  # New stream features encountered
+            self._stream_feature_stanzas.update(features.get_features())
 
         # compute list of unhandled stream features
         found_tags = set([re.match('{.*}(.*)', n.tag).groups(1)[0]
                          for n in features.xml.getchildren()])
         unhandled = found_tags - set(features.get_features().keys())
         if unhandled:
-            log.error("Unhandled stream features: %s", unhandled)
+            log.error("Unhandled stream features: %s", sorted(unhandled))
 
         return super(StreamFeatureClient, self)._handle_stream_features(features)
 
     def _stream_negotiated(self, *args, **kwargs):
-        log.info('### Stream negotiated')
         self.disconnect()
