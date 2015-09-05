@@ -1,0 +1,23 @@
+{% load i18n server_test %}
+
+<h2 id="core" class="page-header">{{ core.status|status }} {% trans "Core XMPP features" %}</h2>
+<p>{% blocktrans %}These features are part of either <a href="http://www.ietf.org/rfc/rfc6120.txt">
+RFC 6120: XMPP Core</a> or <a href="http://www.ietf.org/rfc/rfc6121.txt">RFC 6121: XMPP IM</a>. 
+They should definetly be supported by your server.{% endblocktrans %}</p>
+<div class="row">
+    <div class="col-md-5">
+        <table class="table table-bordered">
+            <tr><th colspan="2">{% trans "Client side" %}</th><th>{% trans "notes" %}</th></tr>
+            <tr><td>{% trans "Transport Layer Security" %}</td><td>{{ core.tls.status|status }}</td>
+                <td>{{ core.tls.info }}</td></tr>
+            <tr><td>{% trans "IM Session Establishment" %}</td><td>{{ core.session.status|status }}</td><td></td><tr>
+            <tr><td>{% trans "SASL Authentication" %}</td><td>{{ core.sasl.status|status }}</td><td></td></tr>
+            <tr><td>{% trans "Resource Binding" %}</td><td>{{ core.bind.status|status }}</td><td></td></tr>
+        </table>
+    </div>
+    <div class="col-md-5">
+        <table class="table table-bordered">
+            <tr><th colspan="2">{% trans "Server side" %}</th><th>{% trans "notes" %}</tr>
+        </table>
+    </div>
+</div>
