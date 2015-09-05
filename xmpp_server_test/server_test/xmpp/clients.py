@@ -75,10 +75,10 @@ class StreamFeatureClient(ClientXMPP):
 
     def process_stream_features(self):
         # process core features
-        self.test.data['core']['tls']['status'] = 'starttls' in self._stream_feature_stanzas
-        self.test.data['core']['session']['status'] = 'session' in self._stream_feature_stanzas
-        self.test.data['core']['sasl']['status'] = 'sasl' in self._stream_feature_stanzas
-        self.test.data['core']['bind']['status'] = 'bind' in self._stream_feature_stanzas
+        self.test.data['core']['details']['tls']['status'] = 'starttls' in self._stream_feature_stanzas
+        self.test.data['core']['details']['session']['status'] = 'session' in self._stream_feature_stanzas
+        self.test.data['core']['details']['sasl']['status'] = 'sasl' in self._stream_feature_stanzas
+        self.test.data['core']['details']['bind']['status'] = 'bind' in self._stream_feature_stanzas
 
         # process XEPs
         self.test.data['xeps']['details']['0077']['status'] = 'register' in self._stream_feature_stanzas
