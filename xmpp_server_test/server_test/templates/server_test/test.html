@@ -5,3 +5,11 @@
 {% with connect=data.connect %}
     {% include "server_test/servertest/connect.html" %}
 {% endwith %}
+
+{% with core=data.core %}
+    {% include "server_test/servertest/core.html" %}
+{% endwith %}
+
+{% with xeps=data.xeps %}
+    {% include "server_test/servertest/xeps.html" %}
+{% endwith %}
