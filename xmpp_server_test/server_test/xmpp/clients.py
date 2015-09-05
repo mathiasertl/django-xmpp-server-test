@@ -72,6 +72,24 @@ class StreamFeatureClient(ClientXMPP):
         load_plugin(name, module)
         self.plugin.enable(name)
 
+    def process_stream_features(self):
+        self.servertest.data['xeps']['0077']['status'] = 'register' in self._stream_feature_stanzas
+        self.servertest.data['xeps']['0078']['status'] = 'auth' in self._stream_feature_stanzas
+        self.servertest.data['xeps']['0079']['status'] = 'amp' in self._stream_feature_stanzas
+        self.servertest.data['xeps']['0138']['status'] = 'compress' in self._stream_feature_stanzas
+        self.servertest.data['xeps']['0198']['status'] = 'sm' in self._stream_feature_stanzas
+
+    def test_xep0092(self):
+        log.info('### Trying to get software version...')
+        try:
+            version = self['xep_0092'].get_version(self.boundjid.domain, ifrom=self.boundjid.full)
+            if version['type'] == 'result':
+                self.servertest.data['xeps']['0092']['status'] = False
+            else:
+                self.servertest.data['xeps']['0092']['status'] = False
+        except:
+            self.servertest.data['xeps']['0092']['status'] = False
+
     def _handle_stream_features(self, features):
         """Collect incoming stream features.
 
@@ -95,12 +113,9 @@ class StreamFeatureClient(ClientXMPP):
 
     def _stream_negotiated(self, *args, **kwargs):
         log.info('### Stream negotiated.')
-        log.info('### Trying to get software version...')
-        #version = self['xep_0092'].get_version(self.boundjid.domain, self.boundjid.full)
-        # jabber.ccc.de is not implemented!
-        version = self['xep_0092'].get_version('jabber.org', self.boundjid.full)
-        log.info('### Version: %s', version)
-        self.disconnect()
+        self.process_stream_features()
+        self.test_xep0092()
+        #self.disconnect()
 
     def session_start(self, event):
         pass

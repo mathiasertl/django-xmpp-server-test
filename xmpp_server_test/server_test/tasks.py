@@ -79,7 +79,8 @@ def test_server(test, username, password):
         client.process(block=True)
     else:
         log.error('Error connecting to %s', test.server.domain)
-
+        data['core']['status'] = False
+        data['xeps']['status'] = False
 
     test.finished = True
     test.server.listed = True
