@@ -17,16 +17,20 @@
 from celery import shared_task
 from celery.utils.log import get_task_logger
 
+from sleekxmpp.xmlstream import JID
+
 from django.conf import settings
+from django.utils.crypto import get_random_string
 
 from .models import ServerTest
 from .utils import test_connection
+from .xmpp.clients import StreamFeatureClient
 
 log = get_task_logger(__name__)
 
 
 @shared_task
-def test_server(test):
+def test_server(test, username, password):
     test = ServerTest.objects.select_related('server').get(pk=test)
 
     data = test.data
@@ -66,6 +70,16 @@ def test_server(test):
         test.save()
         test.server.save()
         return
+
+    # Start testing for features
+    jid = JID(local=username, domain=test.server.domain, resource='jsfc-%s' % get_random_string())
+    log.info('Test for features from %s', jid.full)
+    client = StreamFeatureClient(test, jid.full, password)
+    if client.connect():
+        client.process(block=True)
+    else:
+        log.error('Error connecting to %s', test.server.domain)
+
 
     test.finished = True
     test.server.listed = True
