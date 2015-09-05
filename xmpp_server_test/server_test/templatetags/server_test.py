@@ -46,6 +46,8 @@ def status(value):
         text += 'label-success">' + _('OK') + '</span>'
     elif value is False:
         text += 'label-danger">' + _('Failed') + '</span>'
+    elif value == 'no':
+        text += 'label-danger">' + _('No') + '</span>'
     else:
         text += 'label-danger">' + _('Unknown') + '</span>'
     return mark_safe(text)

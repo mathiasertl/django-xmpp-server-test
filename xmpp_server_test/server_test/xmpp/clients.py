@@ -85,7 +85,10 @@ class StreamFeatureClient(ClientXMPP):
 
         # process XEPs
         self.test.data['xeps']['0077']['status'] = 'register' in self._stream_feature_stanzas
-        self.test.data['xeps']['0078']['status'] = 'auth' in self._stream_feature_stanzas
+        if 'auth' in self._stream_feature_stanzas:
+            self.test.data['xeps']['0078']['status'] = True
+        else:
+            self.test.data['xeps']['0078']['status'] = 'no'
         self.test.data['xeps']['0079']['status'] = 'amp' in self._stream_feature_stanzas
         self.test.data['xeps']['0115']['status'] = 'c' in self._stream_feature_stanzas
         self.test.data['xeps']['0138']['status'] = 'compress' in self._stream_feature_stanzas
