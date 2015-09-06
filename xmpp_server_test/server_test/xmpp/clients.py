@@ -19,9 +19,13 @@ import re
 
 from django.conf import settings
 
+from sleekxmpp.basexmpp import BaseXMPP
 from sleekxmpp.clientxmpp import ClientXMPP
 from sleekxmpp.exceptions import IqError
 from sleekxmpp.plugins.base import load_plugin
+from sleekxmpp.stanza import StreamFeatures
+from sleekxmpp.xmlstream.handler import Callback
+from sleekxmpp.xmlstream.matcher import MatchXPath
 
 #from .plugins import amp
 #from .plugins import auth
@@ -29,7 +33,7 @@ from sleekxmpp.plugins.base import load_plugin
 from .plugins import caps
 from .plugins import compression
 from .plugins import csi
-#from .plugins import dialback
+from .plugins import dialback
 from .plugins import register
 from .plugins import rosterver
 #from .plugins import session
@@ -86,7 +90,7 @@ class StreamFeatureClient(ClientXMPP):
             if stanza.find('{%s}required' % stanza.namespace) is None:
                 self.test.data['core']['tls']['status'] = 'optional'
             else:
-                self.test.data['core']['tls']['status'] = True
+                self.test.data['core']['tls']['status'] = 'required'
         else:
             self.test.data['core']['tls']['status'] = False
 
@@ -111,7 +115,7 @@ class StreamFeatureClient(ClientXMPP):
     def test_xep0030(self):  # XEP-0030: Service Discovery
         log.info('[XEP-0030]: Testing Service Discovery...')
         try:
-            info = self['xep_0030'].get_info(jid=self.boudjid.domain, ifrom=self.broundjid.full)
+            info = self['xep_0030'].get_info(jid=self.boundjid.domain, ifrom=self.boundjid.full)
             log.info('[XEP-0030]: Received data: %s', info)
             self.test.data['xeps']['0030']['status'] = True
         except IqError as e:
@@ -166,16 +170,116 @@ class StreamFeatureClient(ClientXMPP):
     def _stream_negotiated(self, *args, **kwargs):
         log.info('### Stream negotiated.')
         self.process_stream_features()
+        self.test_xep0030()
         self.test_xep0092()
-        self.test.data['core']['status'] = True
-        self.test.data['xeps']['status'] = True
         self.disconnect()
 
     def session_start(self, event):
         pass
 
 
-class StreamFeatureServer(StreamFeatureClient):
-    def __init__(self, test, *args, **kwargs):
-        kwargs['ns'] = 'jabber:server'
-        super(StreamFeatureServer, self).__init__(test, *args, **kwargs)
+class StreamFeatureServer(BaseXMPP):
+    def __init__(self, test, jid, lang='en'):
+        super(StreamFeatureServer, self).__init__(jid, default_ns='jabber:server')
+
+        self.test = test
+        self.use_ipv6 = settings.USE_IP6
+        self.auto_reconnect = False
+        self.test = test
+        self._stream_feature_stanzas = {}
+
+        # adapted from ClientXMPP
+        self.default_port = 5269
+        self.default_lang = lang
+        self.stream_header = "<stream:stream to='%s' %s %s %s %s>" % (
+            self.boundjid.host,
+            "xmlns:stream='%s'" % self.stream_ns,
+            "xmlns='%s'" % self.default_ns,
+            "xml:lang='%s'" % self.default_lang,
+            "version='1.0'")
+        self.stream_footer = "</stream:stream>"
+
+        self.features = set()
+        self._stream_feature_handlers = {}
+        self._stream_feature_order = []
+
+        self.dns_service = 'xmpp-server'
+
+        self.register_stanza(StreamFeatures)
+        self.register_handler(
+                Callback('Stream Features',
+                         MatchXPath('{%s}features' % self.stream_ns),
+                         self._handle_stream_features))
+
+        self.register_plugin('feature_starttls')
+        self.register_plugin('feature_dialback', module=dialback)
+        self.register_plugin('feature_sm', module=sm)
+
+        self.add_event_handler('stream_negotiated', self._stream_negotiated)
+
+    def connect(self, address=tuple(), reattempt=True,
+                use_tls=True, use_ssl=False):
+        """Adapted from ClientXMPP.
+
+        When no address is given, a SRV lookup for the server will
+        be attempted. If that fails, the server user in the JID
+        will be used.
+
+        :param address: A tuple containing the server's host and port.
+        :param reattempt: If ``True``, repeat attempting to connect if an
+                         error occurs. Defaults to ``True``.
+        :param use_tls: Indicates if TLS should be used for the
+                        connection. Defaults to ``True``.
+        :param use_ssl: Indicates if the older SSL connection method
+                        should be used. Defaults to ``False``.
+        """
+        self.session_started_event.clear()
+
+        # If an address was provided, disable using DNS SRV lookup;
+        # otherwise, use the domain from the client JID with the standard
+        # XMPP client port and allow SRV lookup.
+        if address:
+            self.dns_service = None
+        else:
+            address = (self.boundjid.host, 5269)
+            self.dns_service = 'xmpp-server'
+
+        return super(StreamFeatureServer, self).connect(address[0], address[1], use_tls=use_tls,
+                                                        use_ssl=use_ssl, reattempt=reattempt)
+
+    def _handle_stream_features(self, features):
+        if 'starttls' in features['features']:  # Reset stream features after starttls
+            self._stream_feature_stanzas = {
+                'starttls': features['starttls'],
+            }
+        else:  # New stream features encountered
+            self._stream_feature_stanzas.update(features.get_features())
+
+        found_tags = set([re.match('{.*}(.*)', n.tag).groups(1)[0]
+                         for n in features.xml.getchildren()])
+        unhandled = found_tags - set(features.get_features().keys())
+        if unhandled:
+            log.error("Unhandled stream features: %s", sorted(unhandled))
+        return ClientXMPP._handle_stream_features(self, features)
+
+    def process_stream_features(self):
+        # Process starttls
+        if 'starttls' in self._stream_feature_stanzas:
+            stanza = self._stream_feature_stanzas['starttls']
+            if stanza.find('{%s}required' % stanza.namespace) is None:
+                self.test.data['core']['tls']['server'] = 'optional'
+            else:
+                self.test.data['core']['tls']['server'] = 'required'
+        else:
+            self.test.data['core']['tls']['status'] = False
+
+        self.test.data['xeps']['0220']['status'] = 'dialback' in self._stream_feature_stanzas or 'no'
+        self.test.data['xeps']['0288']['status'] = 'bidi' in self._stream_feature_stanzas or 'no'
+
+    def _stream_negotiated(self, *args, **kwargs):
+        log.info('### Stream negotiated.')
+        log.info('### Stream features: %s', sorted(self._stream_feature_stanzas))
+        self.process_stream_features()
+        self.disconnect()
+
+    register_feature = ClientXMPP.register_feature
