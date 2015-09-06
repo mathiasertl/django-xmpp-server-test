@@ -25,6 +25,7 @@ from django.utils.crypto import get_random_string
 from .models import ServerTest
 from .utils import test_connection
 from .xmpp.clients import StreamFeatureClient
+from .xmpp.clients import StreamFeatureServer
 
 log = get_task_logger(__name__)
 
@@ -79,8 +80,13 @@ def test_server(test, username, password):
         client.process(block=True)
     else:
         log.error('Error connecting to %s', test.server.domain)
-        data['core']['status'] = False
-        data['xeps']['status'] = False
+
+    log.info('Test for server features from %s', test.server.domain)
+    client = StreamFeatureServer(test, test.server.domain)
+    if client.connect():
+        client.process(block=True)
+    else:
+        log.error('Error connecting to %s', test.server.domain)
 
     test.finished = True
     test.server.listed = True
