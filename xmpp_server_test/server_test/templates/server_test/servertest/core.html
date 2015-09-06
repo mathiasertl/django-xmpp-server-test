@@ -18,6 +18,7 @@ They should definetly be supported by your server.{% endblocktrans %}</p>
     <div class="col-md-5">
         <table class="table table-bordered">
             <tr><th colspan="2">{% trans "Server side" %}</th><th>{% trans "Notes" %}</tr>
+            <tr><td>{% trans "Transport Layer Security" %}</td><td>{{ core.tls.server|status }}</td><td></td></tr>
         </table>
     </div>
 </div>
