@@ -168,8 +168,9 @@ class ServerTest(models.Model):
         self.data['dns']['ipv6'] = self.data['dns']['client_ipv6'] \
             and self.data['dns']['client_ipv6']
 
-        self.data['dns']['status'] = self.data['dns']['srv'] and self.data['dns']['ipv4'] \
-            and self.data['dns']['ipv6']
+        self.data['dns']['status'] = self.data['dns']['srv'] and self.data['dns']['ipv4']
+        if settings.USE_IP6 is True:
+            self.data['dns']['status'] = self.data['dns']['status'] and self.data['dns']['ipv6']
         if self.data['dns']['srv'] is False or self.data['dns']['client'] is False or \
                 self.data['dns']['server'] is False:
             # This server has some serious DNS test issues, it should not be listed.
