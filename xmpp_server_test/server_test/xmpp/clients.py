@@ -76,12 +76,28 @@ class StreamFeatureClient(ClientXMPP):
     def process_stream_features(self):
         log.info('### Stream features: %s', sorted(self._stream_feature_stanzas))
 
-        # process core features
-        #TODO: Details for TLS, SALS authentication
-        self.test.data['core']['tls']['status'] = 'starttls' in self._stream_feature_stanzas
+        # Process basic core features (stanza is present -> server supports it)
         self.test.data['core']['session']['status'] = 'session' in self._stream_feature_stanzas
-        self.test.data['core']['sasl']['status'] = 'mechanisms' in self._stream_feature_stanzas
         self.test.data['core']['bind']['status'] = 'bind' in self._stream_feature_stanzas
+
+        # Process starttls
+        if 'starttls' in self._stream_feature_stanzas:
+            stanza = self._stream_feature_stanzas['starttls']
+            if stanza.find('{%s}required' % stanza.namespace) is None:
+                self.test.data['core']['tls']['status'] = 'optional'
+            else:
+                self.test.data['core']['tls']['status'] = True
+        else:
+            self.test.data['core']['tls']['status'] = False
+
+        # Process SASL authentication mechanisms
+        if 'mechanisms' in self._stream_feature_stanzas:
+            self.test.data['core']['sasl']['status'] = True
+            stanza = self._stream_feature_stanzas['mechanisms']
+            algos = [n.text for n in stanza.findall('{%s}mechanism' % stanza.namespace)]
+            self.test.data['core']['sasl']['algorithms'] = algos
+        else:
+            self.test.data['core']['sasl']['status'] = False
 
         # process XEPs
         self.test.data['xeps']['0077']['status'] = 'register' in self._stream_feature_stanzas or 'no'
@@ -92,24 +108,38 @@ class StreamFeatureClient(ClientXMPP):
         self.test.data['xeps']['0198']['status'] = 'sm' in self._stream_feature_stanzas or 'no'
         self.test.data['xeps']['0352']['status'] = 'csi' in self._stream_feature_stanzas or 'no'
 
-    def test_xep0092(self):
+    def test_xep0030(self):  # XEP-0030: Service Discovery
+        log.info('[XEP-0030]: Testing Service Discovery...')
+        try:
+            info = self['xep_0030'].get_info(jid=self.boudjid.domain, ifrom=self.broundjid.full)
+            log.info('[XEP-0030]: Received data: %s', info)
+            self.test.data['xeps']['0030']['status'] = True
+        except IqError as e:
+            if e.condition == 'feature-not-implemented':
+                self.test.data['xeps']['0030']['status'] = 'no'
+            else:
+                log.error('[XEP-0030]: Unhandled condition: %s', e.condition)
+                self.test.data['xeps']['0030']['status'] = False
+            self.test.data['xeps']['0030']['condition'] = e.condition
+
+    def test_xep0092(self):  # XEP-0092: Software Version
         log.info('### Trying to get software version...')
         try:
             version = self['xep_0092'].get_version(self.boundjid.domain, ifrom=self.boundjid.full)
             if version['type'] == 'result':
                 self.test.data['xeps']['0092']['status'] = True
             else:
-                log.error('[XEP-0079]: Received IQ stanza of type "%s".', version['type'])
+                log.error('[XEP-0092]: Received IQ stanza of type "%s".', version['type'])
                 self.test.data['xeps']['0092']['status'] = False
         except IqError as e:
             if e.condition == 'feature-not-implemented':
                 self.test.data['xeps']['0092']['status'] = 'no'
             else:
-                log.error('[XEP-0079]: Unhandled condition: %s', e.condition)
+                log.error('[XEP-0092]: Unhandled condition: %s', e.condition)
                 self.test.data['xeps']['0092']['status'] = False
             self.test.data['xeps']['0092']['condition'] = e.condition
         except Exception as e:
-            log.error("[XEP-0079] %s: %s", type(e).__name__, e)
+            log.error("[XEP-0092] %s: %s", type(e).__name__, e)
             self.test.data['xeps']['0092']['status'] = False
 
     def _handle_stream_features(self, features):
@@ -143,3 +173,9 @@ class StreamFeatureClient(ClientXMPP):
 
     def session_start(self, event):
         pass
+
+
+class StreamFeatureServer(StreamFeatureClient):
+    def __init__(self, test, *args, **kwargs):
+        kwargs['ns'] = 'jabber:server'
+        super(StreamFeatureServer, self).__init__(test, *args, **kwargs)
