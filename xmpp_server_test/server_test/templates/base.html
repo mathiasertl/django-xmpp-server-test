@@ -5,6 +5,9 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{% block title %}{% endblock title %}</title>
+        <script src="{% static "js/lib/jquery-2.1.4.js" %}"></script>
+        <script src="{% static "js/server_test.js" %}"></script>
+        {% block js %}{% endblock js %}
         <link href="{% static 'css/lib/bootstrap.css' %}" rel="stylesheet">
     </head>
     <body role="document">

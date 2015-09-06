@@ -3,6 +3,11 @@
 
 {% block title %}{% blocktrans with domain=server.domain %}Results: {{ domain }}{% endblocktrans %}{%endblock %}
 {% block pagetitle %}{% blocktrans with domain=server.domain %}Test results for {{ domain }}{% endblocktrans %}{%endblock %}
+{% block js %}
+    <script>
+        var refresh_url = "{% url 'server-test:servertest_refresh' domain=test.server.domain pk=test.pk %}";
+    </script>
+{% endblock js %}
 
 {% block body %}
 <a href="{{ test.get_absolute_url }}">{% trans "Permalink to this report" %}</a> | 
