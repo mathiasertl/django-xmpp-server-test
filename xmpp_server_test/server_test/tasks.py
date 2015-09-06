@@ -81,6 +81,9 @@ def test_server(test, username, password):
     else:
         log.error('Error connecting to %s', test.server.domain)
 
+    # test server in between
+    test.server.save()
+
     log.info('Test for server features from %s', test.server.domain)
     client = StreamFeatureServer(test, test.server.domain)
     if client.connect():
