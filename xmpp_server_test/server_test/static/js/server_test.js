@@ -4,9 +4,9 @@ var refresh_test = function() {
         $('#servertest-details.in-progress').replaceWith(data);
     });
 
-    window.setTimeout(refresh_content, 3000);
+    window.setTimeout(refresh_test, 3000);
 }
 
 $(document).ready(function() {
-    window.setTimeout(refresh_content, 3000);
+    window.setTimeout(refresh_test, 3000);
 });
