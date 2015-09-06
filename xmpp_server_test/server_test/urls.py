@@ -23,5 +23,8 @@ urlpatterns = [
     url(r'^$', views.RootView.as_view(), name='overview'),
     url(r'^tests/$', views.FullListView.as_view(), name='full-list'),
     url(r'^tests/(?P<domain>[^/]+)/$', views.ServerView.as_view(), name='server'),
-    url(r'^tests/(?P<domain>[^/]+)/(?P<pk>\d+)/$', views.ServerTestView.as_view(), name='servertest'),
+    url(r'^tests/(?P<domain>[^/]+)/(?P<pk>\d+)/$', views.ServerTestView.as_view(),
+        name='servertest'),
+    url(r'^tests/(?P<domain>[^/]+)/(?P<pk>\d+)/refresh/$', views.RefreshServerTestView.as_view(),
+        name='servertest_refresh'),
 ]

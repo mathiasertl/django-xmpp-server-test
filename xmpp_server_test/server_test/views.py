@@ -92,3 +92,7 @@ class ServerTestView(DetailView):
         context['data'] = context['test'].data
         context['server'] = context['test'].server
         return context
+
+
+class RefreshServerTestView(ServerTestView):
+    template_name = 'server_test/test.html'
