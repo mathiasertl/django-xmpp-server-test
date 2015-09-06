@@ -164,9 +164,9 @@ class ServerTest(models.Model):
         self.srv_lookup('server', domain)
 
         self.data['dns']['ipv4'] = self.data['dns']['client_ipv4'] \
-            and self.data['dns']['client_ipv6']
+            and self.data['dns']['server_ipv4']
         self.data['dns']['ipv6'] = self.data['dns']['client_ipv6'] \
-            and self.data['dns']['client_ipv6']
+            and self.data['dns']['server_ipv6']
 
         self.data['dns']['status'] = self.data['dns']['srv'] and self.data['dns']['ipv4']
         if settings.USE_IP6 is True:
