@@ -1,9 +1,9 @@
 {% load staticfiles i18n %}
 <div id="servertest-details" class="{% if test.finished %}finished{% else %}in-progress{% endif %}">
-{% if not test.finished %}
-<div class="alert alert-warning">
-{% static "img/ajax_loader.gif" %}
-<strong>{% trans "Test is still in progress." %}</strong>
+{% if test.finished %}
+<div id="in-progress-warning" class="alert alert-warning">
+    <img src="{% static "img/ajax-loader.gif" %}" />
+    <strong>{% trans "Test is still in progress." %}</strong>
 </div>
 {% endif %}
 {% with dns=data.dns %}
