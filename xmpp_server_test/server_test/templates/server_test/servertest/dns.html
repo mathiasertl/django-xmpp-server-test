@@ -17,9 +17,11 @@ and you have valid IPv4 records. IPv6 support is currently optional.{% endblockt
             <tr><th colspan="2">{% trans "IPv4 records" %}</th></tr>
             <tr><td>{% trans "Client IPv4" %}</td><td>{{ dns.client_ipv4|status }}</td></tr>
             <tr><td>{% trans "Server IPv4" %}</td><td>{{ dns.server_ipv4|status }}</td></tr>
+            {% if ip6 %}
             <tr><th colspan="2">{% trans "IPv6 records" %}</th></tr>
             <tr><td>{% trans "Client IPv6" %}</td><td>{{ dns.client_ipv6|status }}</td></tr>
             <tr><td>{% trans "Server IPv6" %}</td><td>{{ dns.server_ipv6|status }}</td></tr>
+            {% endif %}
         </table>
     </div>
 </div>
