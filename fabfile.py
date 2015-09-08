@@ -20,7 +20,8 @@ import sys
 
 from fabric.api import local
 from fabric.colors import red
-from fabric.context_managers import quiet
+from fabric.context_managers import hide
+from fabric.context_managers import settings
 from fabric.tasks import Task
 
 
@@ -56,7 +57,7 @@ class DeployTask(Task):
 
     def exists(self, path):
         """Returns True/False depending on if the given path exists."""
-        with quiet():
+        with hide('everything'), settings(warn_only=True):
             return self.sudo('test -e %s' % path, chdir=False).succeeded
 
     def run(self, section='DEFAULT'):
