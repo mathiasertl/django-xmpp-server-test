@@ -96,7 +96,7 @@ class DeployTask(Task):
             if self.exists(self.virtualenv) is False:
                 self.sudo('mkdir -p %s' % self.virtualenv, chdir=False)
             if self.exists(python) is False:
-                self.sudo('virtualenv %s' % self.virtualenv, chdir=False)
+                self.sudo('virtualenv -p /usr/bin/python3 %s' % self.virtualenv, chdir=False)
         else:
             pip = 'pip'
             python = 'python'
