@@ -34,6 +34,7 @@ log = get_task_logger(__name__)
 def test_server(test, username, password):
     test = ServerTest.objects.select_related('server').get(pk=test)
 
+    listed = True
     data = test.data
     data['connect']['status'] = True
     data['connect']['client'] = []
@@ -46,7 +47,7 @@ def test_server(test, username, password):
             status = test_connection(ip, record['port'])
             if status is False:
                 data['connect']['status'] = False
-                test.server.listed = False
+                listed = False
             connect['ips'][ip] = status
         data['connect']['client'].append(connect)
 
@@ -57,7 +58,7 @@ def test_server(test, username, password):
             status = test_connection(ip, record['port'])
             if status is False:
                 data['connect']['status'] = False
-                test.server.listed = False
+                listed = False
             connect['ips'][ip] = status
         data['connect']['server'].append(connect)
 
@@ -65,7 +66,7 @@ def test_server(test, username, password):
     test.save()
 
     # If the server is not marked as listed, we consider it broken. Not for DEBUG of course.
-    if test.server.listed is False and settings.DEBUG is False:
+    if listed is False and settings.DEBUG is False:
         # This means that some connection failed.
         test.finished = True
         test.save()
@@ -92,6 +93,6 @@ def test_server(test, username, password):
         log.error('Error connecting to %s', test.server.domain)
 
     test.finished = True
-    test.server.listed = True
+    test.server.listed = listed
     test.server.save()
     test.save()
