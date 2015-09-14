@@ -114,7 +114,7 @@ class DeployTask(Task):
         self.sg("%s install -U pip" % pip)
         self.sg("%s install -r requirements.txt" % pip)
         self.sg("%s %s migrate" % (python, manage))
-        self.sg("%s %s collectstatic" % (python, manage))
+        self.sg("%s %s collectstatic --noinput" % (python, manage))
         if self.group:
             self.sudo('chmod -R o-rwx .')
 
