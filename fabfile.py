@@ -110,9 +110,11 @@ class DeployTask(Task):
         else:
             self.sg("git clone --branch %s %s %s" % (branch, origin, self.path), chdir=False)
 
+        manage = 'xmpp_server_test/manage.py'
         self.sg("%s install -U pip" % pip)
         self.sg("%s install -r requirements.txt" % pip)
-        self.sg("%s manage.py update" % python)
+        self.sg("%s %s migrate" % (python, manage))
+        self.sg("%s %s collectstatic" % (python, manage))
         if self.group:
             self.sudo('chmod -R o-rwx .')
 
