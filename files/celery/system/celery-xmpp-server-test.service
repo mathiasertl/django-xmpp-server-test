@@ -1,0 +1,24 @@
+[Unit]
+Description=Celery workers
+After=network.target
+Require=systemd-tmpfiles-setup
+
+[Service]
+Type=forking
+User=xmpp-server-test
+Group=xmpp-server-test
+EnvironmentFile=/etc/conf.d/celery-xmpp-server-test.conf
+WorkingDirectory=/usr/local/home/xmpp-server-test/django-xmpp-server-test/xmpp_server_test
+ExecStart=/usr/local/home/xmpp-server-testt/bin/celery multi start $CELERYD_NODES \
+    -A xmpp_server_test --pidfile=${CELERYD_PID_FILE} \
+    --logfile=${CELERYD_LOG_FILE} --loglevel="${CELERYD_LOG_LEVEL}" \
+    $CELERYD_OPTS
+ExecStop=/usr/local/home/xmpp-server-test/bin/celery multi stopwait $CELERYD_NODES \
+    --pidfile=${CELERYD_PID_FILE}
+ExecReload=/usr/local/home/xmpp-server-test/bin/celery multi restart $CELERYD_NODES \
+    -A xmpp_server_test --pidfile=${CELERYD_PID_FILE} \
+    --logfile=${CELERYD_LOG_FILE} --loglevel="${CELERYD_LOG_LEVEL}" \
+    $CELERYD_OPTS
+
+[Install]
+WantedBy=multi-user.target
