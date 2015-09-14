@@ -50,7 +50,11 @@ class StreamFeatureClient(ClientXMPP):
         self.test = test
 
         # disable the stock rosterver plugina
-        self.unregister_feature('rosterver', 9000)
+        registered_features = {f: p  for p, f in self._stream_feature_order}
+        for feature in ['rosterver']:
+            if feature in registered_features:
+                self.unregister_feature(feature, registered_features[feature])
+
 #        self.unregister_feature('bind', 10000)
 #        self.unregister_feature('session', 10001)
         self.replace_plugin('feature_rosterver', rosterver)
