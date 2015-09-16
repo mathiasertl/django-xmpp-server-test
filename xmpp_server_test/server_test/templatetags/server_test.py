@@ -23,7 +23,13 @@ register = template.Library()
 
 
 _xep_names = {
+    '0012': 'Last Activity',
+    '0016': 'Privacy Lists',
     '0030': 'Service Discovery',
+    '0039': 'Statistics Gathering',
+    '0050': 'Ad-Hoc Commands',
+    '0054': 'vcard-temp',
+    '0060': 'Publish-Subscribe',
     '0077': 'In-Band Registration',
     '0078': 'Non-SASL Authentication',
     '0079': 'Advanced Message Processing',
@@ -31,8 +37,12 @@ _xep_names = {
     '0115': 'Entity Capabilities',
     '0138': 'Stream Compression',
     '0198': 'Stream Management',
+    '0199': 'XMPP Ping',
+    '0202': 'Entity Time',
     '0220': 'Server Dialback',
+    '0280': 'Message Carbons',
     '0288': 'Bidirectional Server-to-Server Connections',
+    '0313': 'Message Archive Management',
     '0352': 'Client State Indication',
 }
 _conditions = {
