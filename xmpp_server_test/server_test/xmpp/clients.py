@@ -41,6 +41,21 @@ from .plugins import sm
 
 log = logging.getLogger(__name__)
 
+_feature_mappings = {
+    '0012': 'jabber:iq:last',
+    '0016': 'jabber:iq:privacy',
+    '0039': 'http://jabber.org/protocol/stats',
+    '0050': 'http://jabber.org/protocol/commands',
+    '0054': 'vcard-temp',
+    '0060': 'http://jabber.org/protocol/pubsub',
+    '0160': 'msgoffline',
+    '0191': 'urn:xmpp:blocking',
+    '0199': 'urn:xmpp:ping',
+    '0202': 'urn:xmpp:time',
+    '0280': 'urn:xmpp:carbons:2',
+    '0313': 'urn:xmpp:mam:0',
+}
+
 
 class StreamFeatureClient(ClientXMPP):
     def __init__(self, test, *args, **kwargs):
@@ -120,8 +135,25 @@ class StreamFeatureClient(ClientXMPP):
         log.info('[XEP-0030]: Testing Service Discovery...')
         try:
             info = self['xep_0030'].get_info(jid=self.boundjid.domain, ifrom=self.boundjid.full)
-            log.info('[XEP-0030]: Received data: %s', info)
             self.test.data['xeps']['0030']['status'] = True
+
+            features = info.values['disco_info']['features']
+            if 'jabber:iq:version' in features:
+                features.remove('jabber:iq:version')
+                self.test_xep0092()
+
+            # generic XEPs
+            for xep, feature in _feature_mappings.items():
+                self.test.data['xeps'][xep]['status'] = feature in features
+                if feature in features:
+                    features.remove(feature)
+
+            # remove any additional pubsub namespaces
+            features = [f for f in features if not
+                        f.startswith('http://jabber.org/protocol/pubsub')]
+
+            if features:
+                log.info('Unhandled features: %s', sorted(features))
         except IqError as e:
             if e.condition == 'feature-not-implemented':
                 self.test.data['xeps']['0030']['status'] = 'no'
@@ -136,6 +168,17 @@ class StreamFeatureClient(ClientXMPP):
             version = self['xep_0092'].get_version(self.boundjid.domain, ifrom=self.boundjid.full)
             if version['type'] == 'result':
                 self.test.data['xeps']['0092']['status'] = True
+                data = version.values['software_version']
+
+                # assemble a string displayed in the notes field
+                note = ''
+                if 'name' in data:
+                    note += data['name']
+                if 'version' in data:
+                    note += ' %s' % data['version']
+                if 'os' in data:
+                    note += ' (%s)' % data['os']
+                self.test.data['xeps']['0092']['notes'] = note
             else:
                 log.error('[XEP-0092]: Received IQ stanza of type "%s".', version['type'])
                 self.test.data['xeps']['0092']['status'] = False
@@ -175,7 +218,6 @@ class StreamFeatureClient(ClientXMPP):
         log.info('### Stream negotiated.')
         self.process_stream_features()
         self.test_xep0030()
-        self.test_xep0092()
         self.disconnect()
 
     def session_start(self, event):
@@ -252,6 +294,7 @@ class StreamFeatureServer(BaseXMPP):
                                                         use_ssl=use_ssl, reattempt=reattempt)
 
     def _handle_stream_features(self, features):
+        log.info(features)
         if 'starttls' in features['features']:  # Reset stream features after starttls
             self._stream_feature_stanzas = {
                 'starttls': features['starttls'],
