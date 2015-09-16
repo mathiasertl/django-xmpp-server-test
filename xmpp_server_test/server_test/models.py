@@ -146,16 +146,28 @@ class ServerTest(models.Model):
             'tls': {'status': None, },  # TLS
         }
         self.data['xeps'] = {
+            '0012': {'status': None, },  # Last Activity
+            '0016': {'status': None, },  # Privacy Lists
             '0030': {'status': None, },  # Service Discovery
+            '0039': {'status': None, },  # Statistics Gathering
+            '0050': {'status': None, },  # Ad-Hoc Commands
+            '0054': {'status': None, },  # vcard-temp
+            '0060': {'status': None, },  # Publish-Subscribe
             '0077': {'status': None, },  # In-Band Registration
             '0078': {'status': None, },  # Non-SASL Authentication
             '0079': {'status': None, },  # Advanced Message Processing
             '0092': {'status': None, },  # Software Version
             '0115': {'status': None, },  # Entity Capabilities
             '0138': {'status': None, },  # Stream Compression
+            '0160': {'status': None, },  # Best Practices for Handling Offline Messages
+            '0191': {'status': None, },  # Blocking Command
             '0198': {'status': None, },  # Stream Management
+            '0199': {'status': None, },  # XMPP Ping
+            '0202': {'status': None, },  # Entity Time
             '0220': {'status': None, },  # Server Dialback
+            '0280': {'status': None, },  # Message Carbons
             '0288': {'status': None, },  # Bidirectional Server-to-Server Connections
+            '0313': {'status': None, },  # Message Archive Management
             '0352': {'status': None, },  # Client State Indication
         }
 
