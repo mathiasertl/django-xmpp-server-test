@@ -57,6 +57,7 @@ class ServerTest(models.Model):
     modified = models.DateTimeField(auto_now=True)
     finished = models.BooleanField(default=False)
     data = JSONField(default={}, blank=True)
+    version = models.IntegerField(default=0)
 
     def get_absolute_url(self):
         return reverse('server-test:servertest', kwargs={'domain': self.server.domain, 'pk': self.pk, })
