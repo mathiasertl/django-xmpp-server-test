@@ -97,8 +97,6 @@ class StreamFeatureClient(ClientXMPP):
         self.plugin.enable(name)
 
     def process_stream_features(self):
-        log.info('### Stream features: %s', sorted(self._stream_feature_stanzas))
-
         # Process basic core features (stanza is present -> server supports it)
         self.test.data['core']['session']['status'] = 'session' in self._stream_feature_stanzas
         self.test.data['core']['bind']['status'] = 'bind' in self._stream_feature_stanzas
@@ -164,7 +162,6 @@ class StreamFeatureClient(ClientXMPP):
             self.test.data['xeps']['0030']['condition'] = e.condition
 
     def test_xep0092(self):  # XEP-0092: Software Version
-        log.info('### Trying to get software version...')
         try:
             version = self['xep_0092'].get_version(self.boundjid.domain, ifrom=self.boundjid.full)
             if version['type'] == 'result':
@@ -216,7 +213,6 @@ class StreamFeatureClient(ClientXMPP):
         return super(StreamFeatureClient, self)._handle_stream_features(features)
 
     def _stream_negotiated(self, *args, **kwargs):
-        log.info('### Stream negotiated.')
         self.process_stream_features()
         self.test_xep0030()
         self.disconnect()
@@ -325,8 +321,6 @@ class StreamFeatureServer(BaseXMPP):
         self.test.data['xeps']['0288']['status'] = 'bidi' in self._stream_feature_stanzas or 'no'
 
     def _stream_negotiated(self, *args, **kwargs):
-        log.info('### Stream negotiated.')
-        log.info('### Stream features: %s', sorted(self._stream_feature_stanzas))
         self.process_stream_features()
         self.disconnect()
 
