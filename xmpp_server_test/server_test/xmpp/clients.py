@@ -142,7 +142,7 @@ class StreamFeatureClient(ClientXMPP):
 
             # generic XEPs
             for xep, feature in _feature_mappings.items():
-                self.test.data['xeps'][xep]['status'] = feature in features
+                self.test.data['xeps'][xep]['status'] = feature in features or 'no'
                 self.test.save()
                 if feature in features:
                     features.remove(feature)
