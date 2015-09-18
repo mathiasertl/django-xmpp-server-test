@@ -25,7 +25,7 @@ there is no score yet given to a server, this might be added in the future.{% en
     href="{{ url }}">test results</a>.{% endblocktrans %}</p>
 
 <table class="table table-bordered">
-{% for server in object_list %}
+{% for server in object_list|slice:":10" %}
 <tr><td><a href="{{ server.get_absolute_url }}">{{ server.domain }}</a></td></tr>
 {% endfor %}
 </table>
