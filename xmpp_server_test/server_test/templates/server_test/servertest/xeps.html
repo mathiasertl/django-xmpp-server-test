@@ -7,26 +7,9 @@ user experience, but you might turn of some features deliberately.{% endblocktra
     <div class="col-md-8">
         <table class="table table-bordered">
             <tr><th>{% trans "XEP" %}</th><th>{% trans "Support" %}</th><th>{% trans "Notes" %}</th></tr>
-            {{ xeps|xep:"0012" }}
-            {{ xeps|xep:"0016" }}
-            {{ xeps|xep:"0030" }}
-            {{ xeps|xep:"0039" }}
-            {{ xeps|xep:"0050" }}
-            {{ xeps|xep:"0054" }}
-            {{ xeps|xep:"0060" }}
-            {{ xeps|xep:"0077" }}
-            {{ xeps|xep:"0078" }}
-            {{ xeps|xep:"0079" }}
-            {{ xeps|xep:"0092" }}
-            {{ xeps|xep:"0115" }}
-            {{ xeps|xep:"0138" }}
-            {{ xeps|xep:"0198" }}
-            {{ xeps|xep:"0199" }}
-            {{ xeps|xep:"0202" }}
-            {{ xeps|xep:"0220" }}
-            {{ xeps|xep:"0288" }}
-            {{ xeps|xep:"0313" }}
-            {{ xeps|xep:"0352" }}
+            {% for key, data in xeps.items %}
+                {{ data|xep:key }}
+            {% endfor %}
         </table>
     </div>
 </div>

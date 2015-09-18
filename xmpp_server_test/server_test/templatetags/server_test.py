@@ -78,10 +78,10 @@ def xep(value, number):
         name = 'XEP-%s' % number
 
     td_name = '<td><a href="http://www.xmpp.org/extensions/xep-%s.html">%s</a></td>' % (number, name)
-    td_status = '<td>%s</td>' % status(value[number]['status'])
-    if value[number].get('condition') and value[number]['condition'] in _conditions:
-        td_notes = '<td>%s</td>' % _conditions[value[number]['condition']]
+    td_status = '<td>%s</td>' % status(value['status'])
+    if value.get('condition') and value['condition'] in _conditions:
+        td_notes = '<td>%s</td>' % _conditions[value['condition']]
     else:
-        td_notes = '<td>%s</td>' % value[number].get('notes', '')
+        td_notes = '<td>%s</td>' % value.get('notes', '')
     row = '<tr>%s%s%s</tr>' % (td_name, td_status, td_notes)
     return mark_safe(row)
