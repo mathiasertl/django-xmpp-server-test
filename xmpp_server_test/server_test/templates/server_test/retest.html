@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Jabber server feature checker" %}{% endblock title %}
+
+{% block pagetitle %}{% trans "Jabber server feature checker" %}{% endblock pagetitle %}
+
+{% block body %}
+<form action="{% url 'server-test:server-retest' domain=server.domain %}" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="{% trans 'Start test' %}" />
+</form>
+
+{% endblock body %}
