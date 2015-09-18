@@ -58,6 +58,8 @@ class ServerTest(models.Model):
     finished = models.BooleanField(default=False)
     data = JSONField(default={}, blank=True)
 
+    VERSION = 1
+
     def get_absolute_url(self):
         return reverse('server-test:servertest', kwargs={'domain': self.server.domain, 'pk': self.pk, })
 
@@ -120,6 +122,7 @@ class ServerTest(models.Model):
 
     def start_test(self):
         domain = self.server.domain
+        self.data['version'] = self.VERSION
 
         # set some default values...
         self.data['dns'] = {
