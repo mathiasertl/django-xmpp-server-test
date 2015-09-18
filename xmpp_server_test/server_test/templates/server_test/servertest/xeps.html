@@ -7,7 +7,7 @@ user experience, but you might turn of some features deliberately.{% endblocktra
     <div class="col-md-8">
         <table class="table table-bordered">
             <tr><th>{% trans "XEP" %}</th><th>{% trans "Support" %}</th><th>{% trans "Notes" %}</th></tr>
-            {% for key, data in xeps.items %}
+            {% for key, data in xeps|dictkeysort %}
                 {{ data|xep:key }}
             {% endfor %}
         </table>

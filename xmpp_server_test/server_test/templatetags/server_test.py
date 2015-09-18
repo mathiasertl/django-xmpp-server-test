@@ -36,6 +36,8 @@ _xep_names = {
     '0092': 'Software Version',
     '0115': 'Entity Capabilities',
     '0138': 'Stream Compression',
+    '0160': 'Best Practices for Handling Offline Messages',
+    '0191': 'Blocking Command',
     '0198': 'Stream Management',
     '0199': 'XMPP Ping',
     '0202': 'Entity Time',
@@ -68,6 +70,11 @@ def status(value):
     else:
         text += 'label-danger">' + _('Unknown') + '</span>'
     return mark_safe(text)
+
+
+@register.filter
+def dictkeysort(value):
+    return sorted(value.items(), key=lambda t: t[0])
 
 
 @register.filter
