@@ -53,6 +53,7 @@ class RootView(ListView, FormMixin):
         Handles POST requests, instantiating a form instance with the passed
         POST variables and then checked for validity.
         """
+        self.object_list = self.get_queryset()
         form = self.get_form()
         if form.is_valid():
             return self.form_valid(form)
