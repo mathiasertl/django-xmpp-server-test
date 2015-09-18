@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Jabber server feature checker" %}{% endblock title %}
+{% block title %}{% trans "Jabber server feature test" %}{% endblock title %}
 
-{% block pagetitle %}{% trans "Jabber server feature checker" %}{% endblock pagetitle %}
+{% block pagetitle %}{% trans "Jabber server feature test" %}{% endblock pagetitle %}
 
 {% block body %}
 <form action="{% url 'server-test:server-retest' domain=server.domain %}" method="post">
