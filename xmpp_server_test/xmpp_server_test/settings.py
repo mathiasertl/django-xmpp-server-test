@@ -108,6 +108,9 @@ STATIC_URL = '/static/'
 HTML_MINIFY = True
 USE_IP6 = True
 
+# Minifying this adds html/body stanzas, breaking firefox reload
+EXCLUDE_FROM_MINIFYING = ('^tests/.*/refresh/', )
+
 try:
     from .localsettings import *
 except ImportError:
