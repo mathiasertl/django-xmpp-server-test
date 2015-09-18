@@ -21,7 +21,7 @@ from django.views.generic.edit import FormMixin
 from django.views.generic.edit import FormView
 from django.views.generic.list import ListView
 
-from .forms import DomainForm
+from .forms import ServerTestForm
 from .forms import ServerRetestForm
 from .models import Server
 from .models import ServerTest
@@ -31,7 +31,7 @@ from .tasks import test_server
 class RootView(ListView, FormMixin):
     template_name = 'server_test/root.html'
     queryset = Server.objects.filter(listed=True)
-    form_class = DomainForm
+    form_class = ServerTestForm
 
     def get_context_data(self, **kwargs):
         context = super(RootView, self).get_context_data(**kwargs)

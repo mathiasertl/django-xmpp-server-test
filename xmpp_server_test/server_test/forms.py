@@ -17,7 +17,7 @@
 from django import forms
 
 
-class DomainForm(forms.Form):
+class ServerTestForm(forms.Form):
     domain = forms.CharField()
     username = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput())
