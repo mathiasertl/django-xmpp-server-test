@@ -6,7 +6,7 @@
     <strong>{% trans "Test is still in progress." %}</strong>
 </div>
 {% endif %}
-{% if test.version|default:0 < test.VERSION %}
+{% if data.version|default:0 < test.VERSION %}
 <div class="alert alert-warning">
     {% blocktrans %}<strong>Warning:</strong> This test was generated with an old version of this site.
 Some features may not have been tested.{% endblocktrans %}
