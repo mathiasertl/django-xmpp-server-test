@@ -18,6 +18,8 @@ features are not detected correctly and some are not tested for at all. Also
 there is no score yet given to a server, this might be added in the future.{% endblocktrans %}
 </div>
 
+<div class="row">
+<div class="col-md-5">
 <h3>{% trans "Recent test results" %}</h3>
 
 {% url 'server-test:full-list' as the_url %}
@@ -29,7 +31,9 @@ there is no score yet given to a server, this might be added in the future.{% en
 <tr><td><a href="{{ server.get_absolute_url }}">{{ server.domain }}</a></td></tr>
 {% endfor %}
 </table>
+</div>
 
+<div class="col-md-5">
 <h3>{% trans "Test your server" %}</h3>
 
 <p>{% blocktrans %}If you want to test your own server, fill in the details below. A valid 
@@ -42,5 +46,7 @@ online. The username and password are never stored anywhere.{% endblocktrans %}<
     {{ form.as_p }}
     <input type="submit" value="{% trans 'Start test' %}" />
 </form>
+</div>
+</div>
 
 {% endblock body %}
