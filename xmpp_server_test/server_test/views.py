@@ -16,10 +16,13 @@
 
 from django.http import HttpResponseRedirect
 from django.views.generic import DetailView
+from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.edit import FormMixin
+from django.views.generic.edit import FormView
 from django.views.generic.list import ListView
 
 from .forms import DomainForm
+from .forms import ServerRetestForm
 from .models import Server
 from .models import ServerTest
 from .tasks import test_server
@@ -67,20 +70,33 @@ class ServerView(DetailView):
     slug_field = 'domain'
     slug_url_kwarg = 'domain'
 
-    def get(self, request, *args, **kwargs):
-        if request.GET.get('recheck') == '1':
-            server = self.get_object()
-            test = server.test()
-            if test.finished is False:
-                test_server.delay(test=test.pk)
-            return HttpResponseRedirect(test.get_absolute_url())
-        return super(ServerView, self).get(request, *args, **kwargs)
-
     def get_context_data(self, **kwargs):
         context = super(ServerView, self).get_context_data(**kwargs)
         context['test'] = self.object.latest_test
         context['data'] = context['test'].data
         return context
+
+
+class ServerRetestView(FormView, SingleObjectMixin):
+    queryset = Server.objects.all()
+    context_object_name = 'server'
+    slug_field = 'domain'
+    slug_url_kwarg = 'domain'
+    form_class = ServerRetestForm
+    template_name = 'server_test/retest.html'
+
+    def dispatch(self, *args, **kwargs):
+        self.object = self.get_object()
+        return super(ServerRetestView, self).dispatch(*args, **kwargs)
+
+    def form_valid(self, form):
+        test = self.object.test()
+
+        username = form.cleaned_data['username']
+        password = form.cleaned_data['password']
+        if test.finished is False:
+            test_server.delay(test=test.pk, username=username, password=password)
+        return HttpResponseRedirect(test.get_absolute_url())
 
 
 class ServerTestView(DetailView):

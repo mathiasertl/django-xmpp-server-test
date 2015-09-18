@@ -11,6 +11,6 @@
 
 {% block body %}
 <a href="{{ test.get_absolute_url }}">{% trans "Permalink to this report" %}</a> | 
-<a href="{{ server.get_absolute_url }}?recheck=1">{% trans "Recheck" %}</a>
+<a href="{% url 'server-test:server-retest' domain=test.server.domain %}">{% trans "Retest" %}</a>
 {% include "server_test/test.html" %}
 {% endblock body %}

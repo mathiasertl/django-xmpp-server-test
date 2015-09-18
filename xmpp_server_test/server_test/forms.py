@@ -21,3 +21,8 @@ class DomainForm(forms.Form):
     domain = forms.CharField()
     username = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput())
+
+
+class ServerRetestForm(forms.Form):
+    username = forms.CharField()
+    password = forms.CharField(widget=forms.PasswordInput())
