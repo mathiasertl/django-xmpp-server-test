@@ -62,7 +62,7 @@ class RootView(ListView, FormMixin):
 
 
 class FullListView(ListView):
-    queryset = Server.objects.filter(listed=True)
+    queryset = Server.objects.filter(listed=True).order_by('domain')
 
 
 class ServerView(DetailView):
