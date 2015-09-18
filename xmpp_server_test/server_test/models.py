@@ -64,7 +64,6 @@ class ServerTest(models.Model):
         return reverse('server-test:servertest', kwargs={'domain': self.server.domain, 'pk': self.pk, })
 
     def srv_lookup(self, kind, domain):
-        print('Checking xmpp-%s records for %s' % (kind, domain))
         key = '%s_records' % kind
         try:
             srv_records = resolver.query('_xmpp-%s._tcp.%s' % (kind, domain), 'SRV')
