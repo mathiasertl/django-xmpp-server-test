@@ -19,8 +19,14 @@
                 </div>
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
-                        <li class="active"><a href="{% url 'server-test:overview' %}">Home</a></li>
-                        <li><a href="{% url 'server-test:full-list' %}">{% trans "Test results" %}</a></li>
+                        {% url 'server-test:overview' as url %}
+                        <li {% if request.path = url %}class="active"{% endif %}>
+                            <a href="{{ url }}">{% trans 'Home' %}</a>
+                        </li>
+                        {% url 'server-test:full-list' as url %}
+                        <li {% if request.path = url %}class="active"{% endif %}>
+                            <a href="{{ url }}">{% trans "Test results" %}</a>
+                        </li>
                         <li><a href="">{% trans "Scoring" %}</a></li>
                         <li><a href="">{% trans "About" %}</a></li>
                     </ul>
