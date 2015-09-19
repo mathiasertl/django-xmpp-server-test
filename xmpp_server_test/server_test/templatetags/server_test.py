@@ -27,11 +27,20 @@ def xep0138_notes(value):
 
     client = set(value.get('client', []))
     server = set(value.get('server', []))
+
+    if value['status'] == 'partial':
+        if client:
+            return _('Only supported on client: %s') % ', '.join(sorted(client))
+        elif server:
+            return _('Only supported on client: %s') % ', '.join(sorted(server))
+        else:
+            return _('')
+
     if client or server:  # server supports some methods somewhere
         if client == server:  # same methods client/server
             return _('Methods: %s') % ', '.join(sorted(client))
         else:
-            label = '<span class="label label-warning">%s:</span> Inconsistent methods on client/server:' % _('Warning')
+            label = '<span class="label label-warning">%s</span> Inconsistent methods:' % _('Warning')
             client = _('<li>Client: %s</li>') % ', '.join(sorted(client))
             server = _('<li>Server: %s</li>') % ', '.join(sorted(server))
             return '%s<ul>%s%s</ul>' % (label, client, server)
