@@ -8,8 +8,8 @@
 {% block body %}
 <form action="{% url 'server-test:server-retest' domain=server.domain %}" method="post">
     {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="{% trans 'Start test' %}" />
+    {{ form.as_bootstrap }}
+    <button type="submit" class="btn btn-default">{% trans 'Retest' %}</button>
 </form>
 
 {% endblock body %}

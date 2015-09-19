@@ -20,12 +20,22 @@ _attrs = {'class': 'form-control'}
 _char_widget = forms.TextInput(attrs=_attrs)
 _pwd_widget = forms.PasswordInput(attrs=_attrs)
 
+
+def _as_bootstrap(self):
+    return self._html_output(
+        normal_row='<div class="form-group">%(label)s %(field)s %(help_text)s</div>',
+        error_row='%s',
+        row_ender='</div>',
+        help_text_html=' <p class="help-block">%s</p>',
+        errors_on_separate_row=True)
+
 class ServerTestForm(forms.Form):
     domain = forms.CharField(widget=_char_widget)
     username = forms.CharField(widget=_char_widget)
     password = forms.CharField(widget=_pwd_widget)
-
+    as_bootstrap = _as_bootstrap
 
 class ServerRetestForm(forms.Form):
     username = forms.CharField(widget=_char_widget)
     password = forms.CharField(widget=_pwd_widget)
+    as_bootstrap = _as_bootstrap

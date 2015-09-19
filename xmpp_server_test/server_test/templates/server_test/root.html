@@ -43,13 +43,8 @@ online. The username and password are never stored anywhere.{% endblocktrans %}<
 
 <form action="{% url 'server-test:overview' %}" method="post">
     {% csrf_token %}
-    {% for field in form %}
-        <div class="form-group">
-        {{ field.label_tag }}
-        {{ field }}
-        </div>
-    {% endfor %}
-    <input type="submit" value="{% trans 'Start test' %}" />
+    {{ form.as_bootstrap }}
+    <button type="submit" class="btn btn-default">{% trans 'Start test' %}</button>
 </form>
 </div>
 </div>
