@@ -21,6 +21,22 @@ from django.utils.translation import ugettext as _
 
 register = template.Library()
 
+def xep0138_notes(value):
+    if value['status'] is False:
+        return ''
+
+    client = set(value.get('client', []))
+    server = set(value.get('server', []))
+    if client or server:  # server supports some methods somewhere
+        if client == server:  # same methods client/server
+            return _('Methods: %s') % ', '.join(sorted(client))
+        else:
+            label = '<span class="label label-warning">%s:</span> Inconsistent methods on client/server:' % _('Warning')
+            client = _('<li>Client: %s</li>') % ', '.join(sorted(client))
+            server = _('<li>Server: %s</li>') % ', '.join(sorted(server))
+            return '%s<ul>%s%s</ul>' % (label, client, server)
+
+    return ''
 
 _xep_names = {
     '0012': 'Last Activity',
@@ -49,6 +65,9 @@ _xep_names = {
 }
 _conditions = {
     'feature-not-implemented': _('Not supported.'),
+}
+_xep_notes = {
+    '0138': xep0138_notes,
 }
 
 
@@ -88,6 +107,8 @@ def xep(value, number):
     td_status = '<td>%s</td>' % status(value['status'])
     if value.get('condition') and value['condition'] in _conditions:
         td_notes = '<td>%s</td>' % _conditions[value['condition']]
+    elif number in _xep_notes:
+        td_notes = '<td>%s</td>' % _xep_notes[number](value)
     else:
         td_notes = '<td>%s</td>' % value.get('notes', '')
     row = '<tr>%s%s%s</tr>' % (td_name, td_status, td_notes)
