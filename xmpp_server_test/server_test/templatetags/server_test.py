@@ -61,6 +61,8 @@ def status(value):
         text += 'label-success">' + _('OK') + '</span>'
     elif value == 'required':
         text += 'label-success">' + _('Required') + '</span>'
+    elif value == 'partial':
+        text += 'label-warning">' + _('Partial') + '</span>'
     elif value == 'optional':
         text += 'label-warning">' + _('Optional') + '</span>'
     elif value is False:
