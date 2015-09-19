@@ -90,6 +90,11 @@ class ServerRetestView(FormView, SingleObjectMixin):
         self.object = self.get_object()
         return super(ServerRetestView, self).dispatch(*args, **kwargs)
 
+    def get_context_data(self, **kwargs):
+        context = super(ServerRetestView, self).get_context_data(**kwargs)
+        context['server'] = self.object
+        return context
+
     def form_valid(self, form):
         test = self.object.test()
 
