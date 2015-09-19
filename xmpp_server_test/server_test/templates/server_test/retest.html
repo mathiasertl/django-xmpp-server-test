@@ -6,6 +6,7 @@
 {% block pagetitle %}{% trans "Jabber server feature test" %}{% endblock pagetitle %}
 
 {% block body %}
+<p>{% include "server_test/includes/password_disclaimer.html" %}</p>
 <form action="{% url 'server-test:server-retest' domain=server.domain %}" method="post">
     {% csrf_token %}
     {{ form.as_bootstrap }}

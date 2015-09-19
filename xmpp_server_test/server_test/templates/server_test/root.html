@@ -36,10 +36,7 @@ there is no score yet given to a server, this might be added in the future.{% en
 <div class="col-md-5">
 <h3>{% trans "Test your server" %}</h3>
 
-<p>{% blocktrans %}If you want to test your own server, fill in the details below. A valid 
-username/password is required because most features are only testable once
-logged in. The bot will not send a presence stanza and hence will not appear
-online. The username and password are never stored anywhere.{% endblocktrans %}</p>
+<p>{% include "server_test/includes/password_disclaimer.html" %}</p>
 
 <form action="{% url 'server-test:overview' %}" method="post">
     {% csrf_token %}
