@@ -122,6 +122,7 @@ class ServerTest(models.Model):
     def start_test(self):
         domain = self.server.domain
         self.data['version'] = self.VERSION
+        self.data['authenticated'] = True
 
         # set some default values...
         self.data['dns'] = {
