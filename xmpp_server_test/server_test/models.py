@@ -200,7 +200,7 @@ class ServerTest(models.Model):
         elif xep0138.get('server') or xep0138.get('client'):
             xep0138['status'] = 'partial'
         else:
-            xep0138['status'] = 'no'
+            xep0138['status'] = False
 
         self.server.listed = listed
         self.server.save()
