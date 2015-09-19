@@ -192,5 +192,20 @@ class ServerTest(models.Model):
             self.server.save()
             return  # no SRV records
 
+    def finish(self, listed):
+        # stream compression is partial if only on either client/server
+        xep0138 = self.data['xeps']['0138']
+        if xep0138.get('server') and xep0138.get('client'):
+            xep0138['status'] = True
+        elif xep0138.get('server') or xep0138.get('client'):
+            xep0138['status'] = 'partial'
+        else:
+            xep0138['status'] = 'no'
+
+        self.server.listed = listed
+        self.server.save()
+        self.finished = True
+        self.save()
+
     def __str__(self):
         return '%s: %s' % (self.server.domain, self.created.strftime('%Y-%m-%d %H:%M'))

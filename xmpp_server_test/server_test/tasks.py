@@ -92,7 +92,4 @@ def test_server(test, username, password):
     else:
         log.error('Error connecting to %s', test.server.domain)
 
-    test.finished = True
-    test.server.listed = listed
-    test.server.save()
-    test.save()
+    test.finish(listed)
