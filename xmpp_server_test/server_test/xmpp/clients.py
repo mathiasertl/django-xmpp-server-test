@@ -99,6 +99,7 @@ class StreamFeatureClient(ClientXMPP):
 
     def failed_auth(self, *args, **kwargs):
         self.test.data['authenticated'] = False
+        self.test.save()
         self.disconnect();
 
     def process_stream_features(self):
