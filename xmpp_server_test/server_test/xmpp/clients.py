@@ -127,13 +127,13 @@ class StreamFeatureClient(ClientXMPP):
             self.test.data['core']['sasl']['status'] = False
 
         # process XEPs
-        self.test.data['xeps']['0077']['status'] = 'register' in self._stream_feature_stanzas or 'no'
-        self.test.data['xeps']['0078']['status'] = 'auth' in self._stream_feature_stanzas or 'no'
-        self.test.data['xeps']['0079']['status'] = 'amp' in self._stream_feature_stanzas or 'no'
-        self.test.data['xeps']['0115']['status'] = 'c' in self._stream_feature_stanzas or 'no'
-        self.test.data['xeps']['0138']['status'] = 'compress' in self._stream_feature_stanzas or 'no'
-        self.test.data['xeps']['0198']['status'] = 'sm' in self._stream_feature_stanzas or 'no'
-        self.test.data['xeps']['0352']['status'] = 'csi' in self._stream_feature_stanzas or 'no'
+        self.test.data['xeps']['0077']['status'] = 'register' in self._stream_feature_stanzas
+        self.test.data['xeps']['0078']['status'] = 'auth' in self._stream_feature_stanzas
+        self.test.data['xeps']['0079']['status'] = 'amp' in self._stream_feature_stanzas
+        self.test.data['xeps']['0115']['status'] = 'c' in self._stream_feature_stanzas
+        self.test.data['xeps']['0138']['status'] = 'compress' in self._stream_feature_stanzas
+        self.test.data['xeps']['0198']['status'] = 'sm' in self._stream_feature_stanzas
+        self.test.data['xeps']['0352']['status'] = 'csi' in self._stream_feature_stanzas
 
     def test_xep0030(self):  # XEP-0030: Service Discovery
         log.info('[XEP-0030]: Testing Service Discovery...')
@@ -148,7 +148,7 @@ class StreamFeatureClient(ClientXMPP):
 
             # generic XEPs
             for xep, feature in _feature_mappings.items():
-                self.test.data['xeps'][xep]['status'] = feature in features or 'no'
+                self.test.data['xeps'][xep]['status'] = feature in features
                 self.test.save()
                 if feature in features:
                     features.remove(feature)
@@ -323,8 +323,8 @@ class StreamFeatureServer(BaseXMPP):
         else:
             self.test.data['core']['tls']['status'] = False
 
-        self.test.data['xeps']['0220']['status'] = 'dialback' in self._stream_feature_stanzas or 'no'
-        self.test.data['xeps']['0288']['status'] = 'bidi' in self._stream_feature_stanzas or 'no'
+        self.test.data['xeps']['0220']['status'] = 'dialback' in self._stream_feature_stanzas
+        self.test.data['xeps']['0288']['status'] = 'bidi' in self._stream_feature_stanzas
 
     def _stream_negotiated(self, *args, **kwargs):
         self.process_stream_features()

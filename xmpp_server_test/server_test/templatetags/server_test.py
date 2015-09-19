@@ -64,8 +64,6 @@ def status(value):
     elif value == 'optional':
         text += 'label-warning">' + _('Optional') + '</span>'
     elif value is False:
-        text += 'label-danger">' + _('Failed') + '</span>'
-    elif value == 'no':
         text += 'label-danger">' + _('No') + '</span>'
     else:
         text += 'label-danger">' + _('Unknown') + '</span>'
