@@ -16,13 +16,16 @@
 
 from django import forms
 
+_attrs = {'class': 'form-control'}
+_char_widget = forms.TextInput(attrs=_attrs)
+_pwd_widget = forms.PasswordInput(attrs=_attrs)
 
 class ServerTestForm(forms.Form):
-    domain = forms.CharField()
-    username = forms.CharField()
-    password = forms.CharField(widget=forms.PasswordInput())
+    domain = forms.CharField(widget=_char_widget)
+    username = forms.CharField(widget=_char_widget)
+    password = forms.CharField(widget=_pwd_widget)
 
 
 class ServerRetestForm(forms.Form):
-    username = forms.CharField()
-    password = forms.CharField(widget=forms.PasswordInput())
+    username = forms.CharField(widget=_char_widget)
+    password = forms.CharField(widget=_pwd_widget)
