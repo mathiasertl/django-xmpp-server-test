@@ -11,8 +11,14 @@
     {% blocktrans %}<strong>Warning:</strong> This test was generated with an old version of this site.
 Some features may not have been tested.{% endblocktrans %}
 </div>
+{% endif %}
+{% if not data.authenticated %}
+<div class="alert alert-danger">
+    {% blocktrans %}<strong>Error:</strong> Wrong credentials were supplied for this test, most
+client features were not tested correctly.{% endblocktrans %}
 </div>
 {% endif %}
+
 {% with dns=data.dns %}
     {% include "server_test/servertest/dns.html" %}
 {% endwith %}
@@ -24,7 +30,9 @@ Some features may not have been tested.{% endblocktrans %}
     {% include "server_test/servertest/core.html" %}
 {% endwith %}
 
+{% if data.authenticated %}
 {% with xeps=data.xeps %}
     {% include "server_test/servertest/xeps.html" %}
 {% endwith %}
+{% endif %}
 </div>
