@@ -62,7 +62,6 @@ class StreamFeatureMixin(object):
         if 'compression' in self._stream_feature_stanzas:
             stanza = self._stream_feature_stanzas['compression']
             methods = [n.text for n in stanza.findall('{%s}method' % stanza.namespace)]
-            log.info('### Compression methods (%s): %s', kind, sorted(methods))
             self.test.data['xeps']['0138'][kind] = methods
         else:
             self.test.data['xeps']['0138'][kind] = []
@@ -148,7 +147,6 @@ class StreamFeatureClient(ClientXMPP, StreamFeatureMixin):
         self.test.data['xeps']['0352']['status'] = 'csi' in self._stream_feature_stanzas
 
     def test_xep0030(self):  # XEP-0030: Service Discovery
-        log.info('[XEP-0030]: Testing Service Discovery...')
         try:
             info = self['xep_0030'].get_info(jid=self.boundjid.domain, ifrom=self.boundjid.full)
             self.test.data['xeps']['0030']['status'] = True
@@ -214,7 +212,6 @@ class StreamFeatureClient(ClientXMPP, StreamFeatureMixin):
 
         This method is invoked multiple times if (e.g. after starttls) the stream is renegotiated.
         """
-        log.info('### Client stream features: %s', features)
         if 'starttls' in features['features']:  # Reset stream features after starttls
             self._stream_feature_stanzas = {
                 'starttls': features['starttls'],
@@ -310,7 +307,6 @@ class StreamFeatureServer(BaseXMPP, StreamFeatureMixin):
                                                         use_ssl=use_ssl, reattempt=reattempt)
 
     def _handle_stream_features(self, features):
-        log.info('### Server stream features: %s', features)
         if 'starttls' in features['features']:  # Reset stream features after starttls
             self._stream_feature_stanzas = {
                 'starttls': features['starttls'],
