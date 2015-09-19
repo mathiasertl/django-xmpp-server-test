@@ -170,11 +170,9 @@ class StreamFeatureClient(ClientXMPP, StreamFeatureMixin):
             if features:
                 log.info('Unhandled features: %s', sorted(features))
         except IqError as e:
-            if e.condition == 'feature-not-implemented':
-                self.test.data['xeps']['0030']['status'] = 'no'
-            else:
+            if e.condition != 'feature-not-implemented':
                 log.error('[XEP-0030]: Unhandled condition: %s', e.condition)
-                self.test.data['xeps']['0030']['status'] = False
+            self.test.data['xeps']['0030']['status'] = False
             self.test.data['xeps']['0030']['condition'] = e.condition
 
     def test_xep0092(self):  # XEP-0092: Software Version
