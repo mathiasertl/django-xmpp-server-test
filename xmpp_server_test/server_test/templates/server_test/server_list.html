@@ -6,8 +6,13 @@
 {% block pagetitle %}{% trans "Test results" %}{% endblock pagetitle %}
 
 {% block body %}
-{% trans "A full list of all servers tested:" %}
-<ul>{% for server in object_list %}
-    <li><a href="{{ server.get_absolute_url }}">{{ server.domain }}</a></li>
-{% endfor %}</ul>
+<p>{% blocktrans %}An overview of the last valid test results for each server. For a server to
+be listed, it must have a valid DNS setup and listen on all ports configured by
+their SRV records.{% endblocktrans %}</p>
+
+<table class="table table-bordered">
+{% for server in object_list %}
+    <tr><td><a href="{{ server.get_absolute_url }}">{{ server.domain }}</a></td></tr>
+{% endfor %}
+</table>
 {% endblock body %}
