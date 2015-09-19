@@ -1,9 +1,8 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Jabber server feature test" %}{% endblock title %}
-
-{% block pagetitle %}{% trans "Jabber server feature test" %}{% endblock pagetitle %}
+{% block title %}{% blocktrans with domain=server.domain %}Retest {{ domain }}{% endblocktrans %}{% endblock title %}
+{% block pagetitle %}{% blocktrans with domain=server.domain %}Retest {{ domain }}{% endblocktrans %}{% endblock pagetitle %}
 
 {% block body %}
 <p>{% include "server_test/includes/password_disclaimer.html" %}</p>
