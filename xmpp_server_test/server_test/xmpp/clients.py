@@ -89,12 +89,17 @@ class StreamFeatureClient(ClientXMPP):
 
         self.add_event_handler('stream_negotiated', self._stream_negotiated)
         self.add_event_handler("session_start", self.session_start)
+        self.add_event_handler("failed_auth", self.failed_auth)
         self._stream_feature_stanzas = {}
 
     def replace_plugin(self, name, module):
         self.plugin.disable(name)
         load_plugin(name, module)
         self.plugin.enable(name)
+
+    def failed_auth(self, *args, **kwargs):
+        self.test.data['authenticated'] = False
+        self.disconnect();
 
     def process_stream_features(self):
         # Process basic core features (stanza is present -> server supports it)
