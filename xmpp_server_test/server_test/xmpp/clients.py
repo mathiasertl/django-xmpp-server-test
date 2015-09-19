@@ -155,6 +155,8 @@ class StreamFeatureClient(ClientXMPP, StreamFeatureMixin):
             if 'jabber:iq:version' in features:
                 features.remove('jabber:iq:version')
                 self.test_xep0092()
+            else:
+                self.test.data['xeps']['0092']['status'] = False
 
             # generic XEPs
             for xep, feature in _feature_mappings.items():
