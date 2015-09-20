@@ -153,12 +153,14 @@ class ServerTest(models.Model):
             '0016': {'status': None, },  # Privacy Lists
             '0030': {'status': None, },  # Service Discovery
             '0039': {'status': None, },  # Statistics Gathering
+            '0049': {'status': None, },  # Private XML Storage
             '0050': {'status': None, },  # Ad-Hoc Commands
             '0054': {'status': None, },  # vcard-temp
             '0060': {'status': None, },  # Publish-Subscribe
             '0077': {'status': None, },  # In-Band Registration
             '0078': {'status': None, },  # Non-SASL Authentication
             '0079': {'status': None, },  # Advanced Message Processing
+            '0090': {'status': None, },  # Legacy Entity Time
             '0092': {'status': None, },  # Software Version
             '0115': {'status': None, },  # Entity Capabilities
             '0138': {'status': None, },  # Stream Compression
@@ -168,6 +170,7 @@ class ServerTest(models.Model):
             '0199': {'status': None, },  # XMPP Ping
             '0202': {'status': None, },  # Entity Time
             '0220': {'status': None, },  # Server Dialback
+            '0237': {'status': None, },  # Roster Versioning
             '0280': {'status': None, },  # Message Carbons
             '0288': {'status': None, },  # Bidirectional Server-to-Server Connections
             '0313': {'status': None, },  # Message Archive Management
