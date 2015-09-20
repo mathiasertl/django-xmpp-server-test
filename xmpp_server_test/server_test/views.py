@@ -28,6 +28,11 @@ from .models import ServerTest
 from .tasks import test_server
 
 
+class TestContextMixin(object):
+    def add_test_context(self, context):
+        context['foobar'] = 'whatever'
+
+
 class RootView(ListView, FormMixin):
     template_name = 'server_test/root.html'
     queryset = Server.objects.filter(listed=True)
@@ -65,7 +70,7 @@ class FullListView(ListView):
     queryset = Server.objects.filter(listed=True).order_by('domain')
 
 
-class ServerView(DetailView):
+class ServerView(DetailView, TestContextMixin):
     queryset = Server.objects.all()
     context_object_name = 'server'
     slug_field = 'domain'
@@ -75,6 +80,7 @@ class ServerView(DetailView):
         context = super(ServerView, self).get_context_data(**kwargs)
         context['test'] = self.object.latest_test
         context['data'] = context['test'].data
+        self.add_test_context(context)
         return context
 
 
@@ -105,7 +111,7 @@ class ServerRetestView(FormView, SingleObjectMixin):
         return HttpResponseRedirect(test.get_absolute_url())
 
 
-class ServerTestView(DetailView):
+class ServerTestView(DetailView, TestContextMixin):
     queryset = ServerTest.objects.select_related('server')
     context_object_name = 'test'
 
@@ -113,6 +119,7 @@ class ServerTestView(DetailView):
         context = super(ServerTestView, self).get_context_data(**kwargs)
         context['data'] = context['test'].data
         context['server'] = context['test'].server
+        self.add_test_context(context)
         return context
 
 
