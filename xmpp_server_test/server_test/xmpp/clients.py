@@ -58,6 +58,16 @@ _feature_mappings = {
 
 
 class StreamFeatureMixin(object):
+    def handle_tls_stream_feature(self, kind):
+        if 'starttls' in self._stream_feature_stanzas:
+            stanza = self._stream_feature_stanzas['starttls']
+            if stanza.find('{%s}required' % stanza.namespace) is None:
+                self.test.data['core']['tls'][kind] = 'optional'
+            else:
+                self.test.data['core']['tls'][kind] = 'required'
+        else:
+            self.test.data['core']['tls'][kind] = False
+
     def handle_compression_stream_feature(self, kind):
         if 'compression' in self._stream_feature_stanzas:
             stanza = self._stream_feature_stanzas['compression']
@@ -117,15 +127,8 @@ class StreamFeatureClient(ClientXMPP, StreamFeatureMixin):
         self.test.data['core']['session']['status'] = 'session' in self._stream_feature_stanzas
         self.test.data['core']['bind']['status'] = 'bind' in self._stream_feature_stanzas
 
-        # Process starttls
-        if 'starttls' in self._stream_feature_stanzas:
-            stanza = self._stream_feature_stanzas['starttls']
-            if stanza.find('{%s}required' % stanza.namespace) is None:
-                self.test.data['core']['tls']['status'] = 'optional'
-            else:
-                self.test.data['core']['tls']['status'] = 'required'
-        else:
-            self.test.data['core']['tls']['status'] = False
+        self.handle_tls_stream_feature('server')
+        self.handle_compression_stream_feature('client')
 
         # Process SASL authentication mechanisms
         if 'mechanisms' in self._stream_feature_stanzas:
@@ -136,12 +139,11 @@ class StreamFeatureClient(ClientXMPP, StreamFeatureMixin):
         else:
             self.test.data['core']['sasl']['status'] = False
 
-        self.handle_compression_stream_feature('client')
-
         # process XEPs
         self.test.data['xeps']['0077']['status'] = 'register' in self._stream_feature_stanzas
         self.test.data['xeps']['0078']['status'] = 'auth' in self._stream_feature_stanzas
-        self.test.data['xeps']['0079']['status'] = 'amp' in self._stream_feature_stanzas
+        # xep 0079 may be discoverable via service discovery
+        self.test.data['xeps']['0079']['status'] = 'amp' in self._stream_feature_stanzas or None
         self.test.data['xeps']['0115']['status'] = 'c' in self._stream_feature_stanzas
         self.test.data['xeps']['0198']['status'] = 'sm' in self._stream_feature_stanzas
         self.test.data['xeps']['0352']['status'] = 'csi' in self._stream_feature_stanzas
@@ -322,16 +324,7 @@ class StreamFeatureServer(BaseXMPP, StreamFeatureMixin):
         return ClientXMPP._handle_stream_features(self, features)
 
     def process_stream_features(self):
-        # Process starttls
-        if 'starttls' in self._stream_feature_stanzas:
-            stanza = self._stream_feature_stanzas['starttls']
-            if stanza.find('{%s}required' % stanza.namespace) is None:
-                self.test.data['core']['tls']['server'] = 'optional'
-            else:
-                self.test.data['core']['tls']['server'] = 'required'
-        else:
-            self.test.data['core']['tls']['status'] = False
-
+        self.handle_tls_stream_feature('server')
         self.handle_compression_stream_feature('server')
 
         self.test.data['xeps']['0220']['status'] = 'dialback' in self._stream_feature_stanzas
