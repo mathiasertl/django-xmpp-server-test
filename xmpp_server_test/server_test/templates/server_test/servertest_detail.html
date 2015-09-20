@@ -10,8 +10,8 @@
 {% endblock js %}
 
 {% block body %}
-<a href="{% url 'server-test:server-retest' domain=test.server.domain %}">{% trans "Retest" %}</a>
-
+<a href="{% url 'server-test:server' domain=server.domain %}">{% trans "Most recent test" %}</a>
+| <a href="{% url 'server-test:server-retest' domain=server.domain %}">{% trans "Retest" %}</a>
 {% if request.user.is_superuser %}
 | <a href="{% url 'admin:server_test_servertest_change' test.pk %}">{% trans "in Admin" %}</a>
 {% endif %}
