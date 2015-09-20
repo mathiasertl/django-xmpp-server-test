@@ -58,9 +58,16 @@ _feature_mappings = {
 
 
 class StreamFeatureMixin(object):
+    def handle_stream_feature(self, xep, feature, kind='status', default=False):
+        stanza = self._stream_features.pop(feature, None)
+        if default is False:
+            self.test.data['xeps'][xep][kind] = stanza is not None
+        else:
+            self.test.data['xeps'][xep][kind] = stanza is not None or default
+
     def handle_tls_stream_feature(self, kind):
-        if 'starttls' in self._stream_features:
-            stanza = self._stream_features['starttls']
+        stanza = self._stream_features.pop('starttls', None)
+        if stanza is not None:
             if stanza.find('{%s}required' % stanza.namespace) is None:
                 self.test.data['core']['tls'][kind] = 'optional'
             else:
@@ -69,8 +76,8 @@ class StreamFeatureMixin(object):
             self.test.data['core']['tls'][kind] = False
 
     def handle_compression_stream_feature(self, kind):
-        if 'compression' in self._stream_features:
-            stanza = self._stream_features['compression']
+        stanza = self._stream_features.pop('compression', None)
+        if stanza is not None:
             methods = [n.text for n in stanza.findall('{%s}method' % stanza.namespace)]
             self.test.data['xeps']['0138'][kind] = methods
         else:
@@ -124,29 +131,34 @@ class StreamFeatureClient(ClientXMPP, StreamFeatureMixin):
 
     def process_stream_features(self):
         # Process basic core features (stanza is present -> server supports it)
-        self.test.data['core']['session']['status'] = 'session' in self._stream_features
-        self.test.data['core']['bind']['status'] = 'bind' in self._stream_features
+        self.test.data['core']['session']['status'] = bool(
+            self._stream_features.pop('session', False))
+        self.test.data['core']['bind']['status'] = bool(
+            self._stream_features.pop('bind', False))
 
         self.handle_tls_stream_feature('client')
         self.handle_compression_stream_feature('client')
 
         # Process SASL authentication mechanisms
-        if 'mechanisms' in self._stream_features:
+        sasl_stanza = self._stream_features.pop('mechanisms', None)
+        if sasl_stanza is not None:
             self.test.data['core']['sasl']['status'] = True
-            stanza = self._stream_features['mechanisms']
-            algos = [n.text for n in stanza.findall('{%s}mechanism' % stanza.namespace)]
+            algos = [n.text for n in sasl_stanza.findall('{%s}mechanism' % sasl_stanza.namespace)]
             self.test.data['core']['sasl']['algorithms'] = algos
         else:
             self.test.data['core']['sasl']['status'] = False
 
         # process XEPs
-        self.test.data['xeps']['0077']['status'] = 'register' in self._stream_features
-        self.test.data['xeps']['0078']['status'] = 'auth' in self._stream_features
+        self.handle_stream_feature('0077', 'register')
+        self.handle_stream_feature('0078', 'status')
         # xep 0079 may be discoverable via service discovery
-        self.test.data['xeps']['0079']['status'] = 'amp' in self._stream_features or None
-        self.test.data['xeps']['0115']['status'] = 'c' in self._stream_features
-        self.test.data['xeps']['0198']['status'] = 'sm' in self._stream_features
-        self.test.data['xeps']['0352']['status'] = 'csi' in self._stream_features
+        self.handle_stream_feature('0079', 'amp', default=None)
+        self.handle_stream_feature('0115', 'c')
+        self.handle_stream_feature('0198', 'sm')
+        self.handle_stream_feature('0352', 'csi')
+
+        if self._stream_features:
+            log.error('Unprocessed stream features: %s', sorted(self._stream_features))
 
     def test_xep0030(self):  # XEP-0030: Service Discovery
         try:
@@ -172,7 +184,7 @@ class StreamFeatureClient(ClientXMPP, StreamFeatureMixin):
                         f.startswith('http://jabber.org/protocol/pubsub')]
 
             if features:
-                log.info('Unhandled features: %s', sorted(features))
+                log.error('Unhandled disco features: %s', sorted(features))
         except IqError as e:
             if e.condition != 'feature-not-implemented':
                 log.error('[XEP-0030]: Unhandled condition: %s', e.condition)
@@ -327,13 +339,13 @@ class StreamFeatureServer(BaseXMPP, StreamFeatureMixin):
         self.handle_tls_stream_feature('server')
         self.handle_compression_stream_feature('server')
 
-        self.test.data['xeps']['0220']['status'] = 'dialback' in self._stream_features
-        self.test.data['xeps']['0288']['status'] = 'bidi' in self._stream_features
+        self.test.data['xeps']['0220']['status'] = bool(
+            self._stream_features.pop('dialback', False))
+        self.test.data['xeps']['0288']['status'] = bool(self._stream_features.pop('bidi', False))
+        if self._stream_features:
+            log.error('Unprocessed stream features: %s', sorted(self._stream_features))
 
     def _stream_negotiated(self, *args, **kwargs):
-        log.info('### dir: %s', dir(self))
-        log.info('### self.namespace_map: %s', self.namespace_map)
-        log.info('### self.stream_ns: %s', self.stream_ns)
         self.process_stream_features()
         self.disconnect()
 
