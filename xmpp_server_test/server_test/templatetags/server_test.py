@@ -105,8 +105,8 @@ def dictkeysort(value):
     return sorted(value.items(), key=lambda t: t[0])
 
 
-@register.filter
-def xep(value, number):
+@register.simple_tag(takes_context=True)
+def xep(context, value, number):
     if _xep_names.get(number):
         name = 'XEP-%s: %s' % (number, _xep_names[number])
     else:
