@@ -19,6 +19,8 @@ from django import template
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
+from server_test.xeps import xep_names
+
 register = template.Library()
 
 def xep0138_notes(value):
@@ -47,31 +49,6 @@ def xep0138_notes(value):
 
     return ''
 
-_xep_names = {
-    '0012': 'Last Activity',
-    '0016': 'Privacy Lists',
-    '0030': 'Service Discovery',
-    '0039': 'Statistics Gathering',
-    '0050': 'Ad-Hoc Commands',
-    '0054': 'vcard-temp',
-    '0060': 'Publish-Subscribe',
-    '0077': 'In-Band Registration',
-    '0078': 'Non-SASL Authentication',
-    '0079': 'Advanced Message Processing',
-    '0092': 'Software Version',
-    '0115': 'Entity Capabilities',
-    '0138': 'Stream Compression',
-    '0160': 'Best Practices for Handling Offline Messages',
-    '0191': 'Blocking Command',
-    '0198': 'Stream Management',
-    '0199': 'XMPP Ping',
-    '0202': 'Entity Time',
-    '0220': 'Server Dialback',
-    '0280': 'Message Carbons',
-    '0288': 'Bidirectional Server-to-Server Connections',
-    '0313': 'Message Archive Management',
-    '0352': 'Client State Indication',
-}
 _conditions = {
     'feature-not-implemented': _('Not supported.'),
 }
@@ -107,8 +84,8 @@ def dictkeysort(value):
 
 @register.simple_tag(takes_context=True)
 def xep(context, value, number):
-    if _xep_names.get(number):
-        name = 'XEP-%s: %s' % (number, _xep_names[number])
+    if xep_names.get(number):
+        name = 'XEP-%s: %s' % (number, xep_names[number])
     else:
         name = 'XEP-%s' % number
 
