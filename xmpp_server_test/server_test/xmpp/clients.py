@@ -45,9 +45,11 @@ _feature_mappings = {
     '0012': 'jabber:iq:last',
     '0016': 'jabber:iq:privacy',
     '0039': 'http://jabber.org/protocol/stats',
+    '0049': 'jabber:iq:private',
     '0050': 'http://jabber.org/protocol/commands',
     '0054': 'vcard-temp',
     '0060': 'http://jabber.org/protocol/pubsub',
+    '0090': 'jabber:iq:time',
     '0160': 'msgoffline',
     '0191': 'urn:xmpp:blocking',
     '0199': 'urn:xmpp:ping',
@@ -153,8 +155,9 @@ class StreamFeatureClient(ClientXMPP, StreamFeatureMixin):
         self.handle_stream_feature('0078', 'status')
         # xep 0079 may be discoverable via service discovery
         self.handle_stream_feature('0079', 'amp', default=None)
-        self.handle_stream_feature('0115', 'c')
+        self.handle_stream_feature('0115', 'c', kind='client')
         self.handle_stream_feature('0198', 'sm')
+        self.handle_stream_feature('0237', 'ver')
         self.handle_stream_feature('0352', 'csi')
 
         if self._stream_features:
@@ -182,6 +185,14 @@ class StreamFeatureClient(ClientXMPP, StreamFeatureMixin):
             # remove any additional pubsub namespaces
             features = [f for f in features if not
                         f.startswith('http://jabber.org/protocol/pubsub')]
+
+            # remove disco items
+            ignore_features = [
+                'http://jabber.org/protocol/disco#info',
+                'http://jabber.org/protocol/disco#items',
+                'jabber:iq:register',
+            ]
+            features = [f for f in features if f not in ignore_features]
 
             if features:
                 log.error('Unhandled disco features: %s', sorted(features))
@@ -338,6 +349,7 @@ class StreamFeatureServer(BaseXMPP, StreamFeatureMixin):
     def process_stream_features(self):
         self.handle_tls_stream_feature('server')
         self.handle_compression_stream_feature('server')
+        self.handle_stream_feature('0115', 'c', kind='server')
 
         self.test.data['xeps']['0220']['status'] = bool(
             self._stream_features.pop('dialback', False))
