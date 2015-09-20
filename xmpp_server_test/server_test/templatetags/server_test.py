@@ -19,41 +19,12 @@ from django import template
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
-from server_test.xeps import xep_names
+from server_test.xeps import xeps
 
 register = template.Library()
 
-def xep0138_notes(value):
-    if value['status'] is False:
-        return ''
-
-    client = set(value.get('client', []))
-    server = set(value.get('server', []))
-
-    if value['status'] == 'partial':
-        if client:
-            return _('Only supported on client: %s') % ', '.join(sorted(client))
-        elif server:
-            return _('Only supported on client: %s') % ', '.join(sorted(server))
-        else:
-            return _('')
-
-    if client or server:  # server supports some methods somewhere
-        if client == server:  # same methods client/server
-            return _('Methods: %s') % ', '.join(sorted(client))
-        else:
-            label = '<span class="label label-warning">%s</span> Inconsistent methods:' % _('Warning')
-            client = _('<li>Client: %s</li>') % ', '.join(sorted(client))
-            server = _('<li>Server: %s</li>') % ', '.join(sorted(server))
-            return '%s<ul>%s%s</ul>' % (label, client, server)
-
-    return ''
-
 _conditions = {
     'feature-not-implemented': _('Not supported.'),
-}
-_xep_notes = {
-    '0138': xep0138_notes,
 }
 
 
@@ -84,17 +55,17 @@ def dictkeysort(value):
 
 @register.simple_tag(takes_context=True)
 def xep(context, value, number):
-    if xep_names.get(number):
-        name = 'XEP-%s: %s' % (number, xep_names[number])
-    else:
+    if xeps[number]['name'] is None:
         name = 'XEP-%s' % number
+    else:
+        name = 'XEP-%s: %s' % (number, xeps[number]['name'])
 
     td_name = '<td><a href="http://www.xmpp.org/extensions/xep-%s.html">%s</a></td>' % (number, name)
     td_status = '<td>%s</td>' % status(value['status'])
     if value.get('condition') and value['condition'] in _conditions:
         td_notes = '<td>%s</td>' % _conditions[value['condition']]
-    elif number in _xep_notes:
-        td_notes = '<td>%s</td>' % _xep_notes[number](value)
+    elif xeps[number]['notes'] is not None:
+        td_notes = '<td>%s</td>' % xeps[number]['notes'](value)
     else:
         td_notes = '<td>%s</td>' % value.get('notes', '')
     row = '<tr>%s%s%s</tr>' % (td_name, td_status, td_notes)
