@@ -59,8 +59,8 @@ _feature_mappings = {
 
 class StreamFeatureMixin(object):
     def handle_tls_stream_feature(self, kind):
-        if 'starttls' in self._stream_feature_stanzas:
-            stanza = self._stream_feature_stanzas['starttls']
+        if 'starttls' in self._stream_features:
+            stanza = self._stream_features['starttls']
             if stanza.find('{%s}required' % stanza.namespace) is None:
                 self.test.data['core']['tls'][kind] = 'optional'
             else:
@@ -69,8 +69,8 @@ class StreamFeatureMixin(object):
             self.test.data['core']['tls'][kind] = False
 
     def handle_compression_stream_feature(self, kind):
-        if 'compression' in self._stream_feature_stanzas:
-            stanza = self._stream_feature_stanzas['compression']
+        if 'compression' in self._stream_features:
+            stanza = self._stream_features['compression']
             methods = [n.text for n in stanza.findall('{%s}method' % stanza.namespace)]
             self.test.data['xeps']['0138'][kind] = methods
         else:
@@ -110,7 +110,7 @@ class StreamFeatureClient(ClientXMPP, StreamFeatureMixin):
         self.add_event_handler('stream_negotiated', self._stream_negotiated)
         self.add_event_handler("session_start", self.session_start)
         self.add_event_handler("failed_auth", self.failed_auth)
-        self._stream_feature_stanzas = {}
+        self._stream_features = {}
 
     def replace_plugin(self, name, module):
         self.plugin.disable(name)
@@ -124,29 +124,29 @@ class StreamFeatureClient(ClientXMPP, StreamFeatureMixin):
 
     def process_stream_features(self):
         # Process basic core features (stanza is present -> server supports it)
-        self.test.data['core']['session']['status'] = 'session' in self._stream_feature_stanzas
-        self.test.data['core']['bind']['status'] = 'bind' in self._stream_feature_stanzas
+        self.test.data['core']['session']['status'] = 'session' in self._stream_features
+        self.test.data['core']['bind']['status'] = 'bind' in self._stream_features
 
-        self.handle_tls_stream_feature('server')
+        self.handle_tls_stream_feature('client')
         self.handle_compression_stream_feature('client')
 
         # Process SASL authentication mechanisms
-        if 'mechanisms' in self._stream_feature_stanzas:
+        if 'mechanisms' in self._stream_features:
             self.test.data['core']['sasl']['status'] = True
-            stanza = self._stream_feature_stanzas['mechanisms']
+            stanza = self._stream_features['mechanisms']
             algos = [n.text for n in stanza.findall('{%s}mechanism' % stanza.namespace)]
             self.test.data['core']['sasl']['algorithms'] = algos
         else:
             self.test.data['core']['sasl']['status'] = False
 
         # process XEPs
-        self.test.data['xeps']['0077']['status'] = 'register' in self._stream_feature_stanzas
-        self.test.data['xeps']['0078']['status'] = 'auth' in self._stream_feature_stanzas
+        self.test.data['xeps']['0077']['status'] = 'register' in self._stream_features
+        self.test.data['xeps']['0078']['status'] = 'auth' in self._stream_features
         # xep 0079 may be discoverable via service discovery
-        self.test.data['xeps']['0079']['status'] = 'amp' in self._stream_feature_stanzas or None
-        self.test.data['xeps']['0115']['status'] = 'c' in self._stream_feature_stanzas
-        self.test.data['xeps']['0198']['status'] = 'sm' in self._stream_feature_stanzas
-        self.test.data['xeps']['0352']['status'] = 'csi' in self._stream_feature_stanzas
+        self.test.data['xeps']['0079']['status'] = 'amp' in self._stream_features or None
+        self.test.data['xeps']['0115']['status'] = 'c' in self._stream_features
+        self.test.data['xeps']['0198']['status'] = 'sm' in self._stream_features
+        self.test.data['xeps']['0352']['status'] = 'csi' in self._stream_features
 
     def test_xep0030(self):  # XEP-0030: Service Discovery
         try:
@@ -215,11 +215,11 @@ class StreamFeatureClient(ClientXMPP, StreamFeatureMixin):
         This method is invoked multiple times if (e.g. after starttls) the stream is renegotiated.
         """
         if 'starttls' in features['features']:  # Reset stream features after starttls
-            self._stream_feature_stanzas = {
+            self._stream_features = {
                 'starttls': features['starttls'],
             }
         else:  # New stream features encountered
-            self._stream_feature_stanzas.update(features.get_features())
+            self._stream_features.update(features.get_features())
 
         # compute list of unhandled stream features
         found_tags = set([re.match('{.*}(.*)', n.tag).groups(1)[0]
@@ -247,7 +247,7 @@ class StreamFeatureServer(BaseXMPP, StreamFeatureMixin):
         self.use_ipv6 = settings.USE_IP6
         self.auto_reconnect = False
         self.test = test
-        self._stream_feature_stanzas = {}
+        self._stream_features = {}
 
         # adapted from ClientXMPP
         self.default_port = 5269
@@ -310,11 +310,11 @@ class StreamFeatureServer(BaseXMPP, StreamFeatureMixin):
 
     def _handle_stream_features(self, features):
         if 'starttls' in features['features']:  # Reset stream features after starttls
-            self._stream_feature_stanzas = {
+            self._stream_features = {
                 'starttls': features['starttls'],
             }
         else:  # New stream features encountered
-            self._stream_feature_stanzas.update(features.get_features())
+            self._stream_features.update(features.get_features())
 
         found_tags = set([re.match('{.*}(.*)', n.tag).groups(1)[0]
                          for n in features.xml.getchildren()])
@@ -327,10 +327,13 @@ class StreamFeatureServer(BaseXMPP, StreamFeatureMixin):
         self.handle_tls_stream_feature('server')
         self.handle_compression_stream_feature('server')
 
-        self.test.data['xeps']['0220']['status'] = 'dialback' in self._stream_feature_stanzas
-        self.test.data['xeps']['0288']['status'] = 'bidi' in self._stream_feature_stanzas
+        self.test.data['xeps']['0220']['status'] = 'dialback' in self._stream_features
+        self.test.data['xeps']['0288']['status'] = 'bidi' in self._stream_features
 
     def _stream_negotiated(self, *args, **kwargs):
+        log.info('### dir: %s', dir(self))
+        log.info('### self.namespace_map: %s', self.namespace_map)
+        log.info('### self.stream_ns: %s', self.stream_ns)
         self.process_stream_features()
         self.disconnect()
 
